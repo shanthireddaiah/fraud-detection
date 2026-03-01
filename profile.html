@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile — FraudShield</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.profile-wrap { max-width: 700px; margin: 0 auto; }
+.profile-hero {
+  background: linear-gradient(135deg, var(--bg2) 0%, rgba(59,130,246,0.08) 100%);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 2.5rem; margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 2rem;
+}
+.avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #8b5cf6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; flex-shrink: 0;
+  border: 3px solid rgba(59,130,246,0.3);
+}
+.profile-name { font-family: sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--heading); }
+.profile-email { color: var(--text2); font-size: 0.9rem; margin-top: 0.25rem; }
+.role-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 20px; padding: 4px 14px; font-size: 0.82rem;
+  font-weight: 600; color: var(--primary); margin-top: 0.75rem;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.info-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 0; border-bottom: 1px solid rgba(30,42,66,0.5);
+}
+.info-row:last-child { border-bottom: none; }
+.info-label { font-size: 0.85rem; color: var(--text3); }
+.info-value { font-size: 0.95rem; color: var(--text); }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div id="toast-container"></div>
+<main>
+  <div class="page-container">
+    <div class="profile-wrap">
+      <div class="section-header"><h1>My Profile</h1><p>Account information and activity summary</p></div>
+      <div class="profile-hero" id="profile-hero"></div>
+      <div class="card" id="profile-stats"></div>
+      <div style="margin-top:1.5rem;display:flex;gap:1rem;">
+        <button class="btn btn-ghost" onclick="Auth.logout()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+</main>
+<div id="footer-placeholder"></div>
+<script src="app.js"></script>
+<script>
+document.getElementById('nav-placeholder').innerHTML = renderNav('profile.html');
+document.getElementById('footer-placeholder').innerHTML = renderFooter();
+if (!Auth.requireAuth()) {}
+const session = Auth.getSession();
+const initials = session.name.split(' ').map(n => n[0]).join('').slice(0,2);
+document.getElementById('profile-hero').innerHTML = `
+  <div class="avatar">${initials}</div>
+  <div>
+    <div class="profile-name">${session.name}</div>
+    <div class="profile-email">${session.email}</div>
+    <div class="role-badge">${session.role === 'admin' ? '⚙ Administrator' : '👤 Registered User'}</div>
+  </div>`;
+const myReports = session.role === 'admin' ? Reports.getAll() : Reports.getByUser(session.email);
+document.getElementById('profile-stats').innerHTML = `
+  <div class="info-row"><span class="info-label">Full Name</span><span class="info-value">${session.name}</span></div>
+  <div class="info-row"><span class="info-label">Email Address</span><span class="info-value">${session.email}</span></div>
+  <div class="info-row"><span class="info-label">Account Role</span><span class="info-value">${session.role === 'admin' ? 'Platform Administrator' : 'Standard User'}</span></div>
+  <div class="info-row"><span class="info-label">Reports ${session.role === 'admin' ? 'Managed' : 'Submitted'}</span><span class="info-value">${myReports.length}</span></div>
+  <div class="info-row"><span class="info-label">Platform</span><span class="info-value">FraudShield — Frontend MVP (Demo)</span></div>
+  <div class="info-row"><span class="info-label">Authentication</span><span class="info-value">Session-based (localStorage)</span></div>`;
+</script>
+</body>
+</html>

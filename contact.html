@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us — FraudShield</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; }
+.contact-info h2 { font-family: sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--heading); margin-bottom: 1rem; }
+.contact-info p { color: var(--text2); line-height: 1.7; margin-bottom: 1.5rem; }
+.contact-item { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.25rem; }
+.contact-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--primary-glow); border: 1px solid rgba(59,130,246,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.contact-item h4 { font-size: 1rem; font-weight: 600; color: white; margin-bottom: 2px; }
+.contact-item p { font-size: 0.88rem; color: var(--text2); margin: 0; }
+@media(max-width:768px) { .contact-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div id="toast-container"></div>
+<main>
+<div class="page-container">
+  <div class="section-header"><h1>Contact Us</h1><p>Get in touch with our team for questions, feedback, or support.</p></div>
+  <div class="contact-grid">
+    <div>
+      <div class="card">
+        <h2>We're here to help</h2>
+        <div class="contact-item" style="margin-top:1rem;"><div class="contact-icon">✉</div><div><h4>Email Support</h4><p>shanthireddaiahj@gmail.com</p></div></div>
+        <div class="contact-item"><div class="contact-icon">📱</div><div><h4>Helpline</h4><p>8247593436</p></div></div>
+        <div class="contact-item"><div class="contact-icon">🕐</div><div><h4>Response Time</h4><p>24-48 hours (demonstration only)</p></div></div>
+        <div class="alert alert-info" style="margin-top:1rem;">ℹ This is a demo platform. Form submissions are stored locally and no real email is sent.</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--heading);margin-bottom:1.25rem;">Send a Message</h3>
+      <div id="contact-alert"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="form-group"><label>Full Name *</label><input type="text" id="c-name" placeholder="Your name"></div>
+        <div class="form-group"><label>Email Address *</label><input type="email" id="c-email" placeholder="your@email.com"></div>
+      </div>
+      <div class="form-group"><label>Subject *</label>
+        <select id="c-subject">
+          <option value="">— Select subject —</option>
+          <option>Question about a report</option>
+          <option>Platform feedback</option>
+          <option>Technical issue</option>
+          <option>General inquiry</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Message *</label><textarea id="c-msg" rows="5" placeholder="Write your message here..."></textarea></div>
+      <button class="btn btn-primary btn-full" onclick="sendContact()">Send Message →</button>
+    </div>
+  </div>
+</div>
+</main>
+<div id="footer-placeholder"></div>
+<script src="app.js"></script>
+<script>
+document.getElementById('nav-placeholder').innerHTML = renderNav('contact.html');
+document.getElementById('footer-placeholder').innerHTML = renderFooter();
+function sendContact() {
+  const name = document.getElementById('c-name').value.trim();
+  const email = document.getElementById('c-email').value.trim();
+  const subject = document.getElementById('c-subject').value;
+  const msg = document.getElementById('c-msg').value.trim();
+  const alertEl = document.getElementById('contact-alert');
+  if (!name || !email || !subject || !msg) {
+    alertEl.innerHTML = '<div class="alert alert-error">✕ Please fill all required fields.</div>'; return;
+  }
+  alertEl.innerHTML = `<div class="alert alert-success">✓ Thank you, ${name}! Your message has been received (stored locally). We'll respond to ${email} within 24-48 hours.</div>`;
+  ['c-name','c-email','c-subject','c-msg'].forEach(id => document.getElementById(id).value = '');
+  showToast('Message sent successfully!', 'success');
+}
+</script>
+</body>
+</html>

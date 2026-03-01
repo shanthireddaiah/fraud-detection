@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — FraudShield</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+.admin-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: calc(100vh - 64px);
+}
+
+.admin-sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+.admin-sidebar .sidebar-role {
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin-bottom: 1.5rem;
+  font-size: 0.82rem;
+  color: var(--primary);
+}
+.admin-sidebar .sidebar-role strong { display: block; color: var(--heading); font-size: 0.9rem; }
+
+.sidebar-btn {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 9px 12px;
+  background: none; border: none;
+  color: var(--text2); font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 500;
+  border-radius: var(--radius); cursor: pointer;
+  transition: all 0.2s; text-align: left;
+  margin-bottom: 2px;
+}
+.sidebar-btn:hover { background: var(--glass); color: var(--heading); }
+.sidebar-btn.active { background: rgba(59,130,246,0.1); color: var(--primary); }
+
+.admin-content { padding: 2.5rem 2rem; }
+
+.admin-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 2rem; flex-wrap: gap;
+}
+.admin-header h1 {
+  font-family: sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--heading);
+}
+
+/* KPI GRID */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2.5rem;
+}
+.kpi-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.25rem;
+  text-align: center;
+}
+.kpi-val {
+  font-family: sans-serif; font-size: 2rem; font-weight: 800; color: var(--heading);
+  line-height: 1;
+}
+.kpi-label { font-size: 0.78rem; color: var(--text3); margin-top: 0.4rem; }
+.kpi-dot { width: 8px; height: 8px; border-radius: 50%; margin: 0 auto 0.6rem; }
+
+/* CHARTS GRID */
+.charts-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;
+}
+.chart-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.5rem;
+}
+.chart-card h3 {
+  font-family: sans-serif; font-size: 0.95rem; font-weight: 700;
+  color: var(--heading); margin-bottom: 1.25rem;
+}
+.chart-wrap { position: relative; height: 220px; }
+
+.chart-wide { grid-column: 1 / -1; }
+
+/* REPORTS TABLE */
+.reports-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+.reports-card-header {
+  padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  flex-wrap: wrap;
+}
+.reports-card-header h3 {
+  font-family: sans-serif; font-size: 1rem; font-weight: 700; color: var(--heading);
+}
+
+.filter-bar {
+  display: flex; gap: 0.75rem; flex-wrap: wrap;
+}
+.filter-bar select, .filter-bar input {
+  width: auto; padding: 7px 12px; font-size: 0.85rem;
+}
+
+.table-wrap { overflow-x: auto; }
+
+.status-select {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 5px 8px;
+  color: var(--text); font-size: 0.82rem;
+  font-family: 'DM Sans', sans-serif; cursor: pointer;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.page-tabs {
+  display: flex; border-bottom: 1px solid var(--border); margin-bottom: 2rem;
+}
+.page-tab {
+  padding: 10px 20px; background: none; border: none;
+  color: var(--text2); font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 500; cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: all 0.2s;
+}
+.page-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+@media (max-width: 960px) {
+  .admin-layout { grid-template-columns: 1fr; }
+  .admin-sidebar { display: none; }
+  .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  .charts-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div id="toast-container"></div>
+
+<main>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-role">
+        <strong id="admin-name">Admin</strong>
+        Platform Administrator
+      </div>
+      <div style="margin-bottom:0.4rem;font-size:0.72rem;color:var(--text3);padding:0 0.5rem;letter-spacing:0.1em;text-transform:uppercase;">Navigation</div>
+      <button class="sidebar-btn active" onclick="switchTab('analytics')">📊 Analytics</button>
+      <button class="sidebar-btn" onclick="switchTab('reports')">📋 All Reports</button>
+      <button class="sidebar-btn" onclick="window.location.href='profile.html'">👤 Profile</button>
+      <button class="sidebar-btn" onclick="Auth.logout()">→ Sign Out</button>
+    </aside>
+
+    <div class="admin-content">
+      <div class="admin-header">
+        <div>
+          <h1>Admin Panel</h1>
+          <p style="color:var(--text2);font-size:0.9rem;margin-top:0.2rem;">Fraud report management and platform analytics</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="refreshAll()">↻ Refresh Data</button>
+      </div>
+
+      <!-- TABS -->
+      <div class="page-tabs">
+        <button class="page-tab active" id="tab-analytics" onclick="switchTab('analytics')">📊 Analytics Dashboard</button>
+        <button class="page-tab" id="tab-reports" onclick="switchTab('reports')">📋 Report Management</button>
+      </div>
+
+      <!-- ANALYTICS TAB -->
+      <div class="tab-panel active" id="panel-analytics">
+        <!-- KPI ROW -->
+        <div class="kpi-grid" id="kpi-grid"></div>
+
+        <!-- CHARTS -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h3>🎯 Fraud Type Distribution</h3>
+            <div class="chart-wrap"><canvas id="chart-types"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>📊 Status Breakdown</h3>
+            <div class="chart-wrap"><canvas id="chart-status"></canvas></div>
+          </div>
+          <div class="chart-card chart-wide">
+            <h3>📈 Monthly Report Trend (2025)</h3>
+            <div class="chart-wrap" style="height:200px;"><canvas id="chart-monthly"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>📍 Location-wise Reports</h3>
+            <div class="chart-wrap"><canvas id="chart-location"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>💰 Amount Lost by Fraud Type</h3>
+            <div class="chart-wrap"><canvas id="chart-amount"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTS TAB -->
+      <div class="tab-panel" id="panel-reports">
+        <div class="reports-card">
+          <div class="reports-card-header">
+            <h3>All Submitted Reports</h3>
+            <div class="filter-bar">
+              <select id="filter-status" onchange="renderReports()">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="in-review">In Review</option>
+                <option value="verified">Verified</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <select id="filter-type" onchange="renderReports()">
+                <option value="">All Types</option>
+                <option value="Phishing">Phishing</option>
+                <option value="Identity Theft">Identity Theft</option>
+                <option value="Financial Scam">Financial Scam</option>
+                <option value="Social Engineering">Social Engineering</option>
+                <option value="Investment Fraud">Investment Fraud</option>
+                <option value="UPI/Payment Fraud">UPI/Payment Fraud</option>
+              </select>
+              <input type="text" id="filter-search" placeholder="Search reports..." oninput="renderReports()" style="width:180px;">
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Report ID</th>
+                  <th>User</th>
+                  <th>Fraud Type</th>
+                  <th>Location</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Update Status</th>
+                </tr>
+              </thead>
+              <tbody id="reports-table-body"></tbody>
+            </table>
+          </div>
+          <div id="no-reports" style="display:none;padding:3rem;text-align:center;color:var(--text3);">No reports found.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script src="app.js"></script>
+<script>
+document.getElementById('nav-placeholder').innerHTML = renderNav('admin.html');
+document.getElementById('footer-placeholder').innerHTML = renderFooter();
+
+if (!Auth.requireAdmin()) {}
+
+const session = Auth.getSession();
+document.getElementById('admin-name').textContent = session.name;
+
+let chartInstances = {};
+
+function destroyChart(id) {
+  if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
+}
+
+const CHART_COLORS = ['#3b82f6','#f97316','#22c55e','#ef4444','#eab308','#38bdf8','#a855f7'];
+const CHART_DEFAULTS = {
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { labels: { color: '#94a3b8', font: { family: 'DM Sans', size: 12 }, boxWidth: 12, padding: 16 } } }
+};
+
+function loadKPIs() {
+  const reports = Reports.getAll();
+  const total = reports.length;
+  const pending = reports.filter(r => r.status === 'pending').length;
+  const verified = reports.filter(r => r.status === 'verified').length;
+  const rejected = reports.filter(r => r.status === 'rejected').length;
+  const inReview = reports.filter(r => r.status === 'in-review').length;
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi-card"><div class="kpi-dot" style="background:#3b82f6;"></div><div class="kpi-val">${total}</div><div class="kpi-label">Total Reports</div></div>
+    <div class="kpi-card"><div class="kpi-dot" style="background:#eab308;"></div><div class="kpi-val" style="color:var(--warning)">${pending}</div><div class="kpi-label">Pending</div></div>
+    <div class="kpi-card"><div class="kpi-dot" style="background:#38bdf8;"></div><div class="kpi-val" style="color:var(--info)">${inReview}</div><div class="kpi-label">In Review</div></div>
+    <div class="kpi-card"><div class="kpi-dot" style="background:#22c55e;"></div><div class="kpi-val" style="color:var(--success)">${verified}</div><div class="kpi-label">Verified</div></div>
+    <div class="kpi-card"><div class="kpi-dot" style="background:#ef4444;"></div><div class="kpi-val" style="color:var(--danger)">${rejected}</div><div class="kpi-label">Rejected</div></div>
+  `;
+}
+
+function loadCharts() {
+  const reports = Reports.getAll();
+
+  // FRAUD TYPES
+  const typeCounts = {};
+  reports.forEach(r => typeCounts[r.fraudType] = (typeCounts[r.fraudType] || 0) + 1);
+  destroyChart('types');
+  chartInstances['types'] = new Chart(document.getElementById('chart-types'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(typeCounts),
+      datasets: [{ data: Object.values(typeCounts), backgroundColor: CHART_COLORS, borderWidth: 2, borderColor: '#0f1420' }]
+    },
+    options: { ...CHART_DEFAULTS, cutout: '65%' }
+  });
+
+  // STATUS
+  const statusCounts = { 'Pending': 0, 'In Review': 0, 'Verified': 0, 'Rejected': 0 };
+  reports.forEach(r => {
+    if (r.status === 'pending') statusCounts['Pending']++;
+    else if (r.status === 'in-review') statusCounts['In Review']++;
+    else if (r.status === 'verified') statusCounts['Verified']++;
+    else if (r.status === 'rejected') statusCounts['Rejected']++;
+  });
+  destroyChart('status');
+  chartInstances['status'] = new Chart(document.getElementById('chart-status'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(statusCounts),
+      datasets: [{
+        label: 'Reports',
+        data: Object.values(statusCounts),
+        backgroundColor: ['rgba(234,179,8,0.7)', 'rgba(56,189,248,0.7)', 'rgba(34,197,94,0.7)', 'rgba(239,68,68,0.7)'],
+        borderColor: ['#eab308', '#38bdf8', '#22c55e', '#ef4444'],
+        borderWidth: 1, borderRadius: 6,
+      }]
+    },
+    options: {
+      ...CHART_DEFAULTS,
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b' } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', stepSize: 1 } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // MONTHLY TREND (mix of real + simulated for demo)
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthlyCounts = new Array(12).fill(0);
+  reports.forEach(r => {
+    const m = new Date(r.createdAt).getMonth();
+    monthlyCounts[m]++;
+  });
+  // Add simulated historical data for richer chart
+  const simulated = [3, 5, 4, 7, 6, 8, 10, 9, 12, 15, 11, 0];
+  const combined = monthlyCounts.map((v, i) => Math.max(v, simulated[i]));
+
+  destroyChart('monthly');
+  chartInstances['monthly'] = new Chart(document.getElementById('chart-monthly'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Reports',
+        data: combined,
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59,130,246,0.08)',
+        fill: true, tension: 0.4,
+        pointBackgroundColor: '#3b82f6', pointRadius: 4
+      }]
+    },
+    options: {
+      ...CHART_DEFAULTS,
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b' } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', stepSize: 2 } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // LOCATION
+  const locCounts = {};
+  reports.forEach(r => { if (r.location) locCounts[r.location] = (locCounts[r.location] || 0) + 1; });
+  // Supplement with demo cities
+  ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune'].forEach(c => {
+    if (!locCounts[c]) locCounts[c] = Math.floor(Math.random() * 4) + 1;
+  });
+  const sortedLocs = Object.entries(locCounts).sort((a,b) => b[1]-a[1]).slice(0,6);
+  destroyChart('location');
+  chartInstances['location'] = new Chart(document.getElementById('chart-location'), {
+    type: 'bar',
+    data: {
+      labels: sortedLocs.map(l => l[0]),
+      datasets: [{
+        label: 'Reports',
+        data: sortedLocs.map(l => l[1]),
+        backgroundColor: 'rgba(249,115,22,0.6)',
+        borderColor: '#f97316', borderWidth: 1, borderRadius: 6
+      }]
+    },
+    options: {
+      ...CHART_DEFAULTS, indexAxis: 'y',
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b' } },
+        y: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // AMOUNT BY TYPE
+  const amountByType = {};
+  reports.forEach(r => {
+    if (r.amount) amountByType[r.fraudType] = (amountByType[r.fraudType] || 0) + Number(r.amount);
+  });
+  const sortedAmounts = Object.entries(amountByType).sort((a,b) => b[1]-a[1]);
+  destroyChart('amount');
+  chartInstances['amount'] = new Chart(document.getElementById('chart-amount'), {
+    type: 'doughnut',
+    data: {
+      labels: sortedAmounts.map(a => a[0]),
+      datasets: [{
+        data: sortedAmounts.map(a => a[1]),
+        backgroundColor: CHART_COLORS.slice(0, sortedAmounts.length),
+        borderWidth: 2, borderColor: '#0f1420'
+      }]
+    },
+    options: {
+      ...CHART_DEFAULTS, cutout: '50%',
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { family: 'DM Sans', size: 11 }, boxWidth: 10, padding: 10 } },
+        tooltip: { callbacks: { label: (ctx) => ` ₹${ctx.parsed.toLocaleString('en-IN')}` } }
+      }
+    }
+  });
+}
+
+function renderReports() {
+  let reports = Reports.getAll();
+  const statusFilter = document.getElementById('filter-status').value;
+  const typeFilter = document.getElementById('filter-type').value;
+  const searchFilter = document.getElementById('filter-search').value.toLowerCase();
+
+  if (statusFilter) reports = reports.filter(r => r.status === statusFilter);
+  if (typeFilter) reports = reports.filter(r => r.fraudType === typeFilter);
+  if (searchFilter) reports = reports.filter(r =>
+    r.id.toLowerCase().includes(searchFilter) ||
+    r.userEmail.toLowerCase().includes(searchFilter) ||
+    r.fraudType.toLowerCase().includes(searchFilter) ||
+    r.description.toLowerCase().includes(searchFilter)
+  );
+
+  const tbody = document.getElementById('reports-table-body');
+  const noReports = document.getElementById('no-reports');
+
+  if (reports.length === 0) {
+    tbody.innerHTML = '';
+    noReports.style.display = 'block';
+    return;
+  }
+  noReports.style.display = 'none';
+
+  tbody.innerHTML = reports.map(r => `
+    <tr>
+      <td><span style="font-family:monospace;font-size:0.82rem;color:var(--text3);">${r.id}</span></td>
+      <td>
+        <div style="font-size:0.88rem;">${r.userName || 'Unknown'}</div>
+        <div style="font-size:0.78rem;color:var(--text3);">${r.userEmail}</div>
+      </td>
+      <td>${r.fraudType}</td>
+      <td style="color:var(--text2);">${r.location || '—'}</td>
+      <td style="color:var(--text2);">${formatAmount(r.amount)}</td>
+      <td style="color:var(--text2);font-size:0.85rem;">${formatDate(r.createdAt)}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td>
+        <select class="status-select" onchange="updateStatus('${r.id}', this.value)">
+          <option value="pending" ${r.status==='pending'?'selected':''}>Pending</option>
+          <option value="in-review" ${r.status==='in-review'?'selected':''}>In Review</option>
+          <option value="verified" ${r.status==='verified'?'selected':''}>Verified</option>
+          <option value="rejected" ${r.status==='rejected'?'selected':''}>Rejected</option>
+        </select>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function updateStatus(id, status) {
+  Reports.updateStatus(id, status);
+  renderReports();
+  loadKPIs();
+  showToast(`Status updated to "${status}"`, 'success');
+}
+
+function switchTab(tab) {
+  ['analytics', 'reports'].forEach(t => {
+    document.getElementById('panel-' + t).classList.remove('active');
+    document.getElementById('tab-' + t).classList.remove('active');
+  });
+  document.getElementById('panel-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'reports') renderReports();
+}
+
+function refreshAll() {
+  loadKPIs();
+  loadCharts();
+  renderReports();
+  showToast('Data refreshed', 'info');
+}
+
+// Init
+loadKPIs();
+loadCharts();
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms & Conditions — FraudShield</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.terms-body { max-width: 800px; margin: 0 auto; }
+.terms-body h2 { font-family: sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--heading); margin: 2rem 0 0.75rem; }
+.terms-body p { color: var(--text2); line-height: 1.8; margin-bottom: 1rem; font-size: 0.95rem; }
+.terms-hero { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2rem; }
+.terms-hero h1 { font-family: sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--heading); }
+.terms-hero .date { color: var(--text3); font-size: 0.85rem; margin-top: 0.5rem; }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<main>
+<div class="page-container">
+<div class="terms-body">
+  <div class="terms-hero">
+    <h1>Terms & Conditions</h1>
+    <div class="date">Last Updated: January 2025 | Version 1.0</div>
+  </div>
+  <div class="card">
+    <h2>1. Platform Scope & Purpose</h2>
+    <p>FraudShield is a frontend-only web application developed as a proof-of-concept and educational demonstration platform. It is designed to simulate a fraud detection and reporting system. This platform does not process real fraud reports, connect to law enforcement, or transmit data to any external server.</p>
+    <h2>2. Data Storage & Privacy</h2>
+    <p>All data entered into this platform — including login credentials, fraud reports, and profile information — is stored exclusively in your browser's localStorage. This data does not leave your device. No backend server, database, or external API is involved in any data storage or retrieval.</p>
+    <h2>3. No Real Authentication</h2>
+    <p>Login credentials provided in this platform are hardcoded for demonstration purposes only. There is no real password security, encryption, or identity verification. You should never use real personal passwords on this platform.</p>
+    <h2>4. Acceptable Use</h2>
+    <p>This platform is intended for demonstration, educational, and portfolio evaluation purposes only. Users must not submit real personally identifiable information, real fraud case details that require legal action, or any sensitive personal data. This platform is not a substitute for official fraud reporting mechanisms such as Cyber Crime Portal, RBI, SEBI, or local law enforcement.</p>
+    <h2>5. No Warranties</h2>
+    <p>FraudShield is provided "as is" without warranties of any kind. The fraud detection tool uses simplified rule-based logic and should not be relied upon for actual fraud determination. Assessment results are illustrative only.</p>
+    <h2>6. Data Loss</h2>
+    <p>Since all data is stored in browser localStorage, clearing browser data, switching browsers, or using private/incognito mode will result in complete loss of all submitted reports and session data. The platform accepts no liability for data loss.</p>
+    <h2>7. Acceptance</h2>
+    <p>By using this platform, you acknowledge that it is a demonstration-only application and agree not to hold its developers liable for any issues arising from its use.</p>
+  </div>
+</div>
+</div>
+</main>
+<div id="footer-placeholder"></div>
+<script src="app.js"></script>
+<script>
+document.getElementById('nav-placeholder').innerHTML = renderNav('terms.html');
+document.getElementById('footer-placeholder').innerHTML = renderFooter();
+</script>
+</body>
+</html>

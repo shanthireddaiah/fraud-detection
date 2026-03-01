@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — FraudShield</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.about-hero {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(249,115,22,0.05));
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 3rem; margin-bottom: 2.5rem; text-align: center;
+}
+.about-hero h1 { font-family: sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--heading); }
+.about-hero p { color: var(--text2); max-width: 600px; margin: 1rem auto 0; line-height: 1.7; }
+.mission-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+.mission-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.75rem; }
+.mission-card .m-icon { font-size: 2rem; margin-bottom: 1rem; }
+.mission-card h3 { font-family: sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--heading); margin-bottom: 0.75rem; }
+.mission-card p { color: var(--text2); line-height: 1.7; font-size: 0.95rem; }
+.team-section { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; }
+.team-section h2 { font-family: sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--heading); margin-bottom: 1.5rem; }
+.disclaimer { background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.2); border-radius: var(--radius); padding: 1.25rem; margin-top: 1.5rem; }
+.disclaimer p { color: var(--text2); font-size: 0.9rem; line-height: 1.6; }
+@media(max-width:768px) { .mission-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<main>
+  <div class="page-container">
+    <div class="about-hero">
+      <h1>About FraudShield</h1>
+      <p>We believe every citizen deserves access to tools that help them identify and report digital fraud — without barriers, without complexity, and without cost.</p>
+    </div>
+    <div class="mission-grid">
+      <div class="mission-card"><div class="m-icon">🎯</div><h3>Our Mission</h3><p>To democratize fraud detection by delivering a frictionless, accessible platform that empowers individuals to recognize, report, and respond to digital fraud regardless of their technical background.</p></div>
+      <div class="mission-card"><div class="m-icon">👁</div><h3>Our Vision</h3><p>A digital ecosystem where fraud awareness is universal, reporting is effortless, and communities are equipped with the knowledge and tools to protect themselves and others.</p></div>
+      <div class="mission-card"><div class="m-icon">🔑</div><h3>Guest-First Philosophy</h3><p>We believe in earning trust before requesting data. Every visitor can access our detection tools and educational content freely — authentication is only required when submitting formal reports.</p></div>
+      <div class="mission-card"><div class="m-icon">📊</div><h3>Data Transparency</h3><p>This is a frontend MVP demonstration. All data is stored locally in your browser via localStorage. No personal information is transmitted to any server. This platform is for demonstration and awareness purposes only.</p></div>
+    </div>
+    
+  </div>
+</main>
+<div id="footer-placeholder"></div>
+<script src="app.js"></script>
+<script>
+document.getElementById('nav-placeholder').innerHTML = renderNav('about.html');
+document.getElementById('footer-placeholder').innerHTML = renderFooter();
+</script>
+</body>
+</html>

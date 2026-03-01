@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FraudShield — Detect & Report Digital Fraud</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* HERO */
+.hero {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 4rem 2rem;
+}
+.hero-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(59,130,246,0.12) 0%, transparent 70%),
+              radial-gradient(ellipse 50% 50% at 80% 80%, rgba(249,115,22,0.08) 0%, transparent 60%);
+}
+.hero-content {
+  max-width: 1200px; margin: 0 auto; width: 100%;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 20px; padding: 4px 14px;
+  font-size: 0.8rem; font-weight: 600; color: var(--primary);
+  letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 1.25rem;
+}
+.hero h1 {
+  font-family: sans-serif;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 800; line-height: 1.1;
+  color: var(--heading); margin-bottom: 1.25rem;
+}
+.hero h1 span { color: var(--primary); }
+.hero p {
+  color: var(--text2); font-size: 1.1rem; line-height: 1.7; margin-bottom: 2rem;
+}
+.hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+.hero-stats {
+  display: flex; gap: 2rem; margin-top: 2.5rem; padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+.stat-item .stat-num {
+  font-family: sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--heading);
+}
+.stat-item .stat-label { font-size: 0.8rem; color: var(--text3); }
+
+/* DETECTION TOOL */
+.detection-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  position: relative;
+}
+.detection-card::before {
+  content: '';
+  position: absolute; top: -1px; left: 30px; right: 30px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+}
+.detection-title {
+  font-family: sans-serif;
+  font-size: 1rem; font-weight: 700; color: var(--heading);
+  margin-bottom: 1.25rem;
+  display: flex; align-items: center; gap: 8px;
+}
+.result-box {
+  margin-top: 1rem;
+  padding: 14px;
+  border-radius: var(--radius);
+  display: none;
+  animation: fadeUp 0.3s ease;
+}
+.result-box.show { display: block; }
+.result-danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); }
+.result-safe { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); }
+.result-warning { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.2); }
+.result-label {
+  font-weight: 700; font-family: sans-serif; font-size: 0.95rem; margin-bottom: 4px;
+}
+.result-danger .result-label { color: var(--danger); }
+.result-safe .result-label { color: var(--success); }
+.result-warning .result-label { color: var(--warning); }
+.result-desc { font-size: 0.88rem; color: var(--text2); line-height: 1.5; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* HOW IT WORKS */
+.section { padding: 5rem 2rem; position: relative; z-index: 1; }
+.section-center { text-align: center; max-width: 600px; margin: 0 auto 3rem; }
+.section-center h2 {
+  font-family: sans-serif; font-size: 2rem; font-weight: 800; color: var(--heading);
+}
+.section-center p { color: var(--text2); margin-top: 0.75rem; }
+
+.steps-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+}
+.step-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.5rem;
+  text-align: center; transition: all 0.3s;
+}
+.step-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: var(--shadow-blue); }
+.step-num {
+  width: 44px; height: 44px;
+  background: var(--primary-glow); border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  font-family: sans-serif; font-weight: 800; color: var(--primary);
+  margin: 0 auto 1rem;
+}
+.step-card h3 { font-family: sans-serif; font-size: 1rem; font-weight: 700; color: var(--heading); margin-bottom: 0.5rem; }
+.step-card p { font-size: 0.88rem; color: var(--text2); line-height: 1.6; }
+
+/* AWARENESS VIDEOS */
+.videos-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+}
+.video-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  transition: all 0.3s;
+}
+.video-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+.video-thumb {
+  height: 160px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem; position: relative;
+  cursor: pointer;
+}
+.video-thumb .play-btn {
+  position: absolute;
+  width: 50px; height: 50px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+.video-thumb:hover .play-btn { background: rgba(59,130,246,0.8); transform: scale(1.1); }
+.video-info { padding: 1.25rem; }
+.video-tag {
+  font-size: 0.75rem; font-weight: 600; color: var(--primary);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem;
+}
+.video-info h3 { font-family: sans-serif; font-size: 1rem; font-weight: 700; color: var(--heading); margin-bottom: 0.4rem; }
+.video-info p { font-size: 0.85rem; color: var(--text2); line-height: 1.5; }
+.video-info .duration { font-size: 0.78rem; color: var(--text3); margin-top: 0.75rem; }
+
+/* VIDEO MODAL */
+.video-player-modal { max-width: 660px; }
+.video-player-modal iframe {
+  width: 100%; height: 340px; border-radius: var(--radius); border: none;
+  background: #000;
+}
+
+/* FRAUD TYPES */
+.types-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+}
+.type-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.5rem;
+  display: flex; gap: 1rem; align-items: flex-start;
+  transition: all 0.3s;
+}
+.type-card:hover { border-color: var(--border2); }
+.type-icon {
+  width: 46px; height: 46px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; flex-shrink: 0;
+}
+.type-card h3 { font-family: sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--heading); margin-bottom: 0.4rem; }
+.type-card p { font-size: 0.85rem; color: var(--text2); line-height: 1.5; }
+
+/* CTA BANNER */
+.cta-banner {
+  max-width: 1200px; margin: 0 auto;
+  background: linear-gradient(135deg, var(--bg2) 0%, rgba(59,130,246,0.1) 100%);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: var(--radius-lg);
+  padding: 3rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+}
+.cta-banner h2 { font-family: sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--heading); }
+.cta-banner p { color: var(--text2); margin-top: 0.5rem; }
+.cta-actions { display: flex; gap: 1rem; flex-shrink: 0; }
+
+@media(max-width:768px) {
+  .hero-content { grid-template-columns: 1fr; }
+  .steps-grid { grid-template-columns: 1fr 1fr; }
+  .videos-grid, .types-grid { grid-template-columns: 1fr; }
+  .cta-banner { flex-direction: column; text-align: center; }
+  .cta-actions { justify-content: center; }
+}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<!-- VIDEO MODAL -->
+<div class="modal-overlay" id="video-modal" onclick="if(event.target===this)closeVideoModal()">
+  <div class="modal video-player-modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="video-modal-title">Awareness Video</h3>
+      <button class="modal-close" onclick="closeVideoModal()">✕</button>
+    </div>
+    <iframe id="video-frame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <p style="color:var(--text2);font-size:0.85rem;margin-top:1rem;">
+      📢 This awareness video helps you recognize and avoid digital fraud. Share with friends and family.
+    </p>
+  </div>
+</div>
+
+<!-- LOGIN MODAL (triggered from guest report) -->
+<div class="modal-overlay" id="login-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">🔐 Sign In to Report</h3>
+      <button class="modal-close" onclick="closeModal('login-modal')">✕</button>
+    </div>
+    <p style="color:var(--text2);font-size:0.9rem;margin-bottom:1.25rem;">Authentication is required to submit a fraud report and track its status.</p>
+    <div id="modal-alert"></div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="modal-email" placeholder="your@email.com">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="modal-password" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="modalLogin()">Sign In & Continue to Report</button>
+    <div style="text-align:center;margin-top:1rem;">
+      <a href="forgot.html" style="color:var(--text3);font-size:0.85rem;text-decoration:none;">Forgot password?</a>
+    </div>
+    <hr class="divider">
+    <p style="text-align:center;font-size:0.85rem;color:var(--text3);">
+      Don't have an account? Contact your administrator.
+    </p>
+  </div>
+</div>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-eyebrow">🛡 AI-Powered Fraud Detection</div>
+        <h1>Detect & Report <span>Digital Fraud</span> Before It Harms You</h1>
+        <p>A citizen-first platform that empowers you to identify fraud patterns, report incidents, and protect yourself — no account required to get started.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-primary btn-lg" onclick="scrollToDetector()">🔍 Try Fraud Detector</button>
+          <button class="btn btn-ghost btn-lg" onclick="continueAsGuest()">Continue as Guest →</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item"><div class="stat-num">6+</div><div class="stat-label">Fraud Types Detected</div></div>
+          <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Free to Use</div></div>
+          <div class="stat-item"><div class="stat-num">0</div><div class="stat-label">Registration Required</div></div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <!-- FRAUD DETECTION TOOL -->
+        <div class="detection-card" id="detector">
+          <div class="detection-title">🔍 Fraud Detection Tool</div>
+          <div class="form-group">
+            <label>Describe the suspicious activity</label>
+            <textarea id="detect-input" rows="3" placeholder="e.g. I received a call asking for my OTP and bank account number..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Type of Interaction</label>
+            <select id="detect-type">
+              <option value="">— Select type —</option>
+              <option value="call">Phone Call</option>
+              <option value="email">Email / SMS</option>
+              <option value="link">Suspicious Link</option>
+              <option value="payment">Unexpected Payment Request</option>
+              <option value="social">Social Media / Messaging App</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Red flags observed (select all that apply)</label>
+            <div id="flags" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
+              <label style="display:flex;gap:6px;align-items:center;margin:0;color:var(--text);font-size:0.85rem;cursor:pointer;"><input type="checkbox" value="otp"> Asked for OTP</label>
+              <label style="display:flex;gap:6px;align-items:center;margin:0;color:var(--text);font-size:0.85rem;cursor:pointer;"><input type="checkbox" value="urgency"> Created urgency</label>
+              <label style="display:flex;gap:6px;align-items:center;margin:0;color:var(--text);font-size:0.85rem;cursor:pointer;"><input type="checkbox" value="reward"> Promised reward</label>
+              <label style="display:flex;gap:6px;align-items:center;margin:0;color:var(--text);font-size:0.85rem;cursor:pointer;"><input type="checkbox" value="unknown"> Unknown sender</label>
+              <label style="display:flex;gap:6px;align-items:center;margin:0;color:var(--text);font-size:0.85rem;cursor:pointer;"><input type="checkbox" value="payment"> Asked for money</label>
+              <label style="display:flex;gap:6px;align-items:center;margin:0;color:var(--text);font-size:0.85rem;cursor:pointer;"><input type="checkbox" value="personal"> Asked personal info</label>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.75rem;">
+            <button class="btn btn-primary" style="flex:1;" onclick="analyzeDetection()">Analyze Now</button>
+            <button class="btn btn-ghost" onclick="clearDetector()">Clear</button>
+          </div>
+          <div class="result-box" id="detect-result"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" style="background:rgba(15,20,32,0.5);">
+    <div class="section-center">
+      <h2>How FraudShield Works</h2>
+      <p>A simple, 4-step process designed for everyone — no technical expertise required.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <h3>Enter as Guest</h3>
+        <p>No sign-up required. Access the fraud detection tool immediately with full functionality.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <h3>Analyze Incident</h3>
+        <p>Describe the suspicious activity. Our rule-based engine assesses fraud probability instantly.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <h3>Get Assessment</h3>
+        <p>Receive a detailed fraud risk assessment with specific fraud type identification and recommendations.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <h3>Submit Report</h3>
+        <p>Authenticate once and submit your report. Track status updates from our review team in real-time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FRAUD TYPES -->
+  <section class="section">
+    <div class="section-center">
+      <h2>Types of Fraud We Detect</h2>
+      <p>FraudShield identifies and categorizes these common digital fraud patterns.</p>
+    </div>
+    <div class="types-grid">
+      <div class="type-card">
+        <div class="type-icon" style="background:rgba(239,68,68,0.15);">🎣</div>
+        <div><h3>Phishing Attacks</h3><p>Fraudulent emails, SMS, or calls impersonating banks, government agencies, or trusted services to steal credentials.</p></div>
+      </div>
+      <div class="type-card">
+        <div class="type-icon" style="background:rgba(249,115,22,0.15);">👤</div>
+        <div><h3>Identity Theft</h3><p>Unauthorized use of personal documents like Aadhaar or PAN to open accounts, take loans, or commit crimes.</p></div>
+      </div>
+      <div class="type-card">
+        <div class="type-icon" style="background:rgba(234,179,8,0.15);">💰</div>
+        <div><h3>Financial Scams</h3><p>Lottery wins, prize money, or investment schemes requiring upfront payments or bank details.</p></div>
+      </div>
+      <div class="type-card">
+        <div class="type-icon" style="background:rgba(59,130,246,0.15);">🧠</div>
+        <div><h3>Social Engineering</h3><p>Psychological manipulation tactics to influence victims into revealing sensitive information or taking harmful actions.</p></div>
+      </div>
+      <div class="type-card">
+        <div class="type-icon" style="background:rgba(168,85,247,0.15);">📈</div>
+        <div><h3>Investment Fraud</h3><p>Fake high-return investment schemes, Ponzi structures, or unregulated crypto platforms promising guaranteed returns.</p></div>
+      </div>
+      <div class="type-card">
+        <div class="type-icon" style="background:rgba(34,197,94,0.15);">💳</div>
+        <div><h3>UPI & Payment Fraud</h3><p>Fake payment requests, QR code scams, and UPI fraud tactics targeting digital payment users.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AWARENESS VIDEOS -->
+  <section class="section" style="background:rgba(15,20,32,0.5);">
+    <div class="section-center">
+      <h2>Fraud Awareness Resources</h2>
+      <p>Educational videos to help you recognize and protect yourself from digital fraud.</p>
+    </div>
+    <div class="videos-grid">
+      <div class="video-card">
+        <div class="video-thumb" style="background:linear-gradient(135deg,#1e1030,#2d1654);" onclick="playVideo('videoplayback.mp4','What is Phishing? Complete Guide')">
+          <span>🎣</span>
+          <div class="play-btn">▶</div>
+        </div>
+        <div class="video-info">
+          <div class="video-tag">Phishing</div>
+          <h3>What is Phishing?</h3>
+          <p>Learn how phishing attacks work and how to identify fraudulent emails, links, and calls.</p>
+          <div class="duration">🕐 ~8 min watch</div>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb" style="background:linear-gradient(135deg,#0f2218,#0a3d20);" onclick="playVideo('videoplayback2.mp4','Social Engineering & Identity Theft')">
+          <span>🧠</span>
+          <div class="play-btn">▶</div>
+        </div>
+        <div class="video-info">
+          <div class="video-tag">Social Engineering</div>
+          <h3>Social Engineering Tactics</h3>
+          <p>Understand how fraudsters psychologically manipulate victims and how to defend yourself.</p>
+          <div class="duration">🕐 ~6 min watch</div>
+        </div>
+      </div>
+      <div class="video-card">
+        <div class="video-thumb" style="background:linear-gradient(135deg,#1a1200,#3d2c00);" onclick="playVideo('videoplayback3.mp4','UPI and Online Payment Fraud')">
+          <span>💳</span>
+          <div class="play-btn">▶</div>
+        </div>
+        <div class="video-info">
+          <div class="video-tag">Payment Fraud</div>
+          <h3>UPI Payment Scams Explained</h3>
+          <p>How fraudsters misuse UPI, QR codes, and payment apps to steal money from unsuspecting users.</p>
+          <div class="duration">🕐 ~5 min watch</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="section">
+    <div class="cta-banner">
+      <div>
+        <h2>Ready to Report a Fraud Incident?</h2>
+        <p>Sign in to submit your report and track its review status in real-time.</p>
+      </div>
+      <div class="cta-actions">
+        <button class="btn btn-ghost btn-lg" onclick="continueAsGuest()">Continue as Guest</button>
+        <a href="login.html" class="btn btn-primary btn-lg">Sign In & Report →</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="footer-placeholder"></div>
+
+<script src="app.js"></script>
+<script>
+document.getElementById('nav-placeholder').innerHTML = renderNav('index.html');
+document.getElementById('footer-placeholder').innerHTML = renderFooter();
+
+function scrollToDetector() {
+  document.getElementById('detector').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function continueAsGuest() {
+  showToast('Welcome! You can use the Fraud Detector freely. Sign in only to submit a report.', 'info');
+  scrollToDetector();
+}
+
+function analyzeDetection() {
+  const text = document.getElementById('detect-input').value.toLowerCase();
+  const type = document.getElementById('detect-type').value;
+  const flags = [...document.querySelectorAll('#flags input:checked')].map(i => i.value);
+  const resultBox = document.getElementById('detect-result');
+
+  if (!text && !type && flags.length === 0) {
+    showToast('Please describe the incident or select some red flags.', 'error');
+    return;
+  }
+
+  // Rule-based fraud detection logic
+  const phishingKeywords = ['otp', 'bank', 'account', 'verify', 'password', 'kyc', 'credentials', 'login', 'suspicious link', 'click here', 'urgent', 'immediate'];
+  const scamKeywords = ['lottery', 'prize', 'winner', 'lucky', 'crore', 'lakh', 'processing fee', 'government scheme', 'refund'];
+  const investKeywords = ['invest', 'returns', 'profit', 'crypto', 'bitcoin', 'guaranteed', 'double', 'scheme'];
+  const socialKeywords = ['call', 'police', 'arrest', 'aadhaar', 'court', 'fir', 'legal', 'criminal'];
+
+  let score = flags.length * 15;
+  let detectedType = 'Unknown Fraud';
+  let detectedClass = 'warning';
+
+  if (phishingKeywords.some(k => text.includes(k)) || type === 'email' || type === 'link') {
+    score += 40; detectedType = 'Phishing Attack';
+  } else if (scamKeywords.some(k => text.includes(k)) || type === 'payment') {
+    score += 45; detectedType = 'Financial Scam';
+  } else if (investKeywords.some(k => text.includes(k))) {
+    score += 35; detectedType = 'Investment Fraud';
+  } else if (socialKeywords.some(k => text.includes(k)) || type === 'call') {
+    score += 35; detectedType = 'Social Engineering';
+  } else if (type === 'social') {
+    score += 25; detectedType = 'Social Media Fraud';
+  }
+
+  if (flags.includes('otp')) { score += 25; detectedType = 'Phishing Attack'; }
+  if (flags.includes('payment')) score += 20;
+
+  let html, cls;
+  if (score >= 50) {
+    cls = 'result-danger';
+    html = `<div class="result-label">🚨 HIGH FRAUD RISK DETECTED</div>
+      <div class="result-desc">Fraud Type: <strong>${detectedType}</strong><br>Risk Score: <strong>${Math.min(score, 100)}%</strong><br><br>
+      This matches known fraud patterns. <strong>Do not share any personal information, OTP, or money.</strong> We strongly recommend filing an official report.</div>
+      <button class="btn btn-accent btn-sm" style="margin-top:10px;" onclick="triggerReport()">📋 Report This Fraud</button>`;
+  } else if (score >= 25) {
+    cls = 'result-warning';
+    html = `<div class="result-label">⚠️ SUSPICIOUS ACTIVITY DETECTED</div>
+      <div class="result-desc">Risk Score: <strong>${Math.min(score, 100)}%</strong><br><br>
+      Some indicators suggest this could be suspicious. Exercise caution, verify through official channels, and do not share sensitive information.</div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:10px;" onclick="triggerReport()">📋 File a Report Anyway</button>`;
+  } else {
+    cls = 'result-safe';
+    html = `<div class="result-label">✅ APPEARS SAFE</div>
+      <div class="result-desc">Risk Score: <strong>${Math.min(score, 100)}%</strong><br><br>
+      Based on the information provided, this does not match common fraud patterns. However, always exercise caution with unsolicited communications.</div>`;
+  }
+
+  resultBox.className = `result-box show ${cls}`;
+  resultBox.innerHTML = html;
+}
+
+function clearDetector() {
+  document.getElementById('detect-input').value = '';
+  document.getElementById('detect-type').value = '';
+  document.querySelectorAll('#flags input').forEach(i => i.checked = false);
+  const rb = document.getElementById('detect-result');
+  rb.className = 'result-box';
+  rb.innerHTML = '';
+}
+
+function triggerReport() {
+  if (Auth.isLoggedIn()) {
+    window.location.href = 'dashboard.html';
+  } else {
+    openModal('login-modal');
+  }
+}
+
+function modalLogin() {
+  const email = document.getElementById('modal-email').value.trim();
+  const password = document.getElementById('modal-password').value;
+  const alertEl = document.getElementById('modal-alert');
+
+  const result = Auth.login(email, password);
+  if (result.success) {
+    closeModal('login-modal');
+    showToast('Signed in successfully! Redirecting to dashboard...', 'success');
+    setTimeout(() => window.location.href = 'dashboard.html', 1000);
+  } else {
+    alertEl.innerHTML = `<div class="alert alert-error">✕ ${result.error}</div>`;
+  }
+}
+
+function playVideo(url, title) {
+  document.getElementById('video-frame').src = url + '?autoplay=1';
+  document.getElementById('video-modal-title').textContent = title;
+  document.getElementById('video-modal').classList.add('active');
+}
+
+function closeVideoModal() {
+  document.getElementById('video-frame').src = '';
+  document.getElementById('video-modal').classList.remove('active');
+}
+</script>
+</body>
+</html>

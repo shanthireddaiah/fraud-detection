@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard — FraudShield</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.dash-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: calc(100vh - 64px);
+}
+
+.sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 2rem 1rem;
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+.sidebar-section { margin-bottom: 2rem; }
+.sidebar-label {
+  font-size: 0.72rem; font-weight: 600; color: var(--text3);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0 0.5rem; margin-bottom: 0.5rem;
+}
+
+.sidebar-btn {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 9px 12px;
+  background: none; border: none;
+  color: var(--text2); font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 500;
+  border-radius: var(--radius); cursor: pointer;
+  transition: all 0.2s; text-align: left;
+}
+.sidebar-btn:hover { background: var(--glass); color: var(--heading); }
+.sidebar-btn.active { background: rgba(59,130,246,0.1); color: var(--primary); border: 1px solid rgba(59,130,246,0.15); }
+.sidebar-btn .icon { font-size: 1rem; }
+
+.dash-content { padding: 2.5rem 2rem; }
+
+/* STATS ROW */
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;
+}
+.stat-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.25rem;
+}
+.stat-card .s-label { font-size: 0.8rem; color: var(--text3); margin-bottom: 0.5rem; }
+.stat-card .s-val {
+  font-family: sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--heading);
+}
+.stat-card .s-sub { font-size: 0.8rem; color: var(--text3); margin-top: 0.25rem; }
+
+/* REPORT FORM */
+.report-form-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 2rem;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+/* HISTORY */
+.history-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+.history-card-header {
+  padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.history-card-header h3 {
+  font-family: sans-serif; font-size: 1rem; font-weight: 700; color: var(--heading);
+}
+
+.report-item {
+  padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(30,42,66,0.5);
+  transition: background 0.15s;
+}
+.report-item:last-child { border-bottom: none; }
+.report-item:hover { background: var(--glass); }
+.report-item-top {
+  display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px;
+}
+.report-id { font-size: 0.78rem; color: var(--text3); font-family: monospace; }
+.report-type { font-weight: 600; color: var(--heading); font-size: 0.95rem; }
+.report-desc { font-size: 0.87rem; color: var(--text2); line-height: 1.5; margin-bottom: 8px; }
+.report-meta { display: flex; gap: 1rem; font-size: 0.8rem; color: var(--text3); flex-wrap: wrap; }
+
+/* TABS */
+.page-tabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 2rem;
+}
+.page-tab {
+  padding: 10px 20px; background: none; border: none;
+  color: var(--text2); font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 500; cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: all 0.2s;
+}
+.page-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.page-tab:hover { color: var(--heading); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+@media (max-width: 768px) {
+  .dash-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div id="toast-container"></div>
+
+<main>
+  <div class="dash-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Main</div>
+        <button class="sidebar-btn active" onclick="switchTab('submit')"><span class="icon">📋</span> Submit Report</button>
+        <button class="sidebar-btn" onclick="switchTab('history')"><span class="icon">📁</span> My Reports</button>
+        <button class="sidebar-btn" onclick="switchTab('track')"><span class="icon">🔎</span> Track Status</button>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Account</div>
+        <button class="sidebar-btn" onclick="window.location.href='profile.html'"><span class="icon">👤</span> Profile</button>
+        <button class="sidebar-btn" onclick="Auth.logout()"><span class="icon">→</span> Sign Out</button>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <div class="dash-content">
+      <div id="user-header" style="margin-bottom:2rem;">
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--heading);">My Dashboard</h1>
+        <p style="color:var(--text2);margin-top:0.25rem;">Manage your fraud reports and track their review status</p>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row" id="stats-row"></div>
+
+      <!-- TABS -->
+      <div class="page-tabs">
+        <button class="page-tab active" id="tab-submit" onclick="switchTab('submit')">📋 Submit Report</button>
+        <button class="page-tab" id="tab-history" onclick="switchTab('history')">📁 My Reports</button>
+        <button class="page-tab" id="tab-track" onclick="switchTab('track')">🔎 Track Status</button>
+      </div>
+
+      <!-- SUBMIT TAB -->
+      <div class="tab-panel active" id="panel-submit">
+        <div class="report-form-card">
+          <div class="section-header">
+            <h2 style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;color:var(--heading);">Submit a Fraud Report</h2>
+            <p style="color:var(--text2);font-size:0.9rem;margin-top:0.3rem;">Provide as much detail as possible. All reports are reviewed by our team.</p>
+          </div>
+          <hr class="divider">
+          <div id="submit-alert"></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fraud Type *</label>
+              <select id="r-type">
+                <option value="">— Select type —</option>
+                <option value="Phishing">Phishing</option>
+                <option value="Identity Theft">Identity Theft</option>
+                <option value="Financial Scam">Financial Scam</option>
+                <option value="Social Engineering">Social Engineering</option>
+                <option value="Investment Fraud">Investment Fraud</option>
+                <option value="UPI/Payment Fraud">UPI / Payment Fraud</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Incident Date *</label>
+              <input type="date" id="r-date">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Location (City/State)</label>
+              <input type="text" id="r-location" placeholder="e.g. Mumbai, Maharashtra">
+            </div>
+            <div class="form-group">
+              <label>Approximate Amount Lost (₹)</label>
+              <input type="number" id="r-amount" placeholder="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Suspect Contact (Phone/Email/URL) — Optional</label>
+            <input type="text" id="r-contact" placeholder="e.g. +91-XXXXXXXXXX or fake@domain.com">
+          </div>
+          <div class="form-group">
+            <label>Detailed Description *</label>
+            <textarea id="r-desc" rows="5" placeholder="Describe exactly what happened. Include the sequence of events, what information was requested, what you may have shared, and any other relevant details..."></textarea>
+          </div>
+          <div style="display:flex;gap:1rem;align-items:center;">
+            <button class="btn btn-primary btn-lg" onclick="submitReport()" id="submit-btn">Submit Report →</button>
+            <button class="btn btn-ghost" onclick="clearForm()">Clear Form</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORY TAB -->
+      <div class="tab-panel" id="panel-history">
+        <div class="history-card">
+          <div class="history-card-header">
+            <h3>My Submitted Reports</h3>
+            <button class="btn btn-ghost btn-sm" onclick="loadHistory()">↻ Refresh</button>
+          </div>
+          <div id="history-list"></div>
+        </div>
+      </div>
+
+      <!-- TRACK TAB -->
+      <div class="tab-panel" id="panel-track">
+        <div class="card" style="max-width:500px;margin-bottom:1.5rem;">
+          <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--heading);margin-bottom:1rem;">Track by Report ID</h3>
+          <div style="display:flex;gap:0.75rem;">
+            <input type="text" id="track-id" placeholder="e.g. RPT-001" style="flex:1;">
+            <button class="btn btn-primary" onclick="trackReport()">Track</button>
+          </div>
+        </div>
+        <div id="track-result"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="footer-placeholder"></div>
+<script src="app.js"></script>
+<script>
+document.getElementById('nav-placeholder').innerHTML = renderNav('dashboard.html');
+document.getElementById('footer-placeholder').innerHTML = renderFooter();
+
+if (!Auth.requireAuth()) {}
+
+const session = Auth.getSession();
+
+function loadStats() {
+  const reports = Reports.getByUser(session.email);
+  const total = reports.length;
+  const pending = reports.filter(r => r.status === 'pending').length;
+  const verified = reports.filter(r => r.status === 'verified').length;
+  const inReview = reports.filter(r => r.status === 'in-review').length;
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="s-label">Total Reports</div><div class="s-val">${total}</div><div class="s-sub">Submitted by you</div></div>
+    <div class="stat-card"><div class="s-label">Pending Review</div><div class="s-val" style="color:var(--warning)">${pending}</div><div class="s-sub">Awaiting admin</div></div>
+    <div class="stat-card"><div class="s-label">In Review</div><div class="s-val" style="color:var(--info)">${inReview}</div><div class="s-sub">Being assessed</div></div>
+    <div class="stat-card"><div class="s-label">Verified</div><div class="s-val" style="color:var(--success)">${verified}</div><div class="s-sub">Confirmed fraud</div></div>
+  `;
+}
+
+function loadHistory() {
+  const reports = Reports.getByUser(session.email);
+  const container = document.getElementById('history-list');
+  if (reports.length === 0) {
+    container.innerHTML = `<div style="padding:3rem;text-align:center;color:var(--text3);">
+      <div style="font-size:2.5rem;margin-bottom:1rem;">📭</div>
+      <div>No reports submitted yet.</div>
+      <button class="btn btn-primary btn-sm" style="margin-top:1rem;" onclick="switchTab('submit')">Submit Your First Report</button>
+    </div>`;
+    return;
+  }
+  container.innerHTML = reports.map(r => `
+    <div class="report-item">
+      <div class="report-item-top">
+        <div>
+          <div class="report-id">${r.id}</div>
+          <div class="report-type">${r.fraudType}</div>
+        </div>
+        ${statusBadge(r.status)}
+      </div>
+      <div class="report-desc">${r.description.length > 120 ? r.description.slice(0, 120) + '...' : r.description}</div>
+      <div class="report-meta">
+        <span>📅 ${formatDate(r.createdAt)}</span>
+        ${r.location ? `<span>📍 ${r.location}</span>` : ''}
+        ${r.amount ? `<span>💰 ${formatAmount(r.amount)}</span>` : ''}
+        <span>🔄 Updated: ${formatDate(r.updatedAt)}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function switchTab(tab) {
+  ['submit', 'history', 'track'].forEach(t => {
+    document.getElementById('panel-' + t).classList.remove('active');
+    document.getElementById('tab-' + t).classList.remove('active');
+    document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+  });
+  document.getElementById('panel-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'history') loadHistory();
+}
+
+function submitReport() {
+  const type = document.getElementById('r-type').value;
+  const date = document.getElementById('r-date').value;
+  const desc = document.getElementById('r-desc').value.trim();
+  const alertEl = document.getElementById('submit-alert');
+  const btn = document.getElementById('submit-btn');
+
+  if (!type || !date || !desc) {
+    alertEl.innerHTML = `<div class="alert alert-error">✕ Please fill all required fields (Type, Date, Description).</div>`;
+    return;
+  }
+
+  btn.innerHTML = '<div class="spinner"></div> Submitting...';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    Reports.add({
+      userEmail: session.email,
+      userName: session.name,
+      fraudType: type,
+      incidentDate: date,
+      location: document.getElementById('r-location').value.trim(),
+      amount: document.getElementById('r-amount').value,
+      suspectContact: document.getElementById('r-contact').value.trim(),
+      description: desc
+    });
+    alertEl.innerHTML = `<div class="alert alert-success">✓ Report submitted successfully! Our team will review it shortly.</div>`;
+    clearForm();
+    loadStats();
+    btn.innerHTML = 'Submit Report →';
+    btn.disabled = false;
+    showToast('Report submitted successfully!', 'success');
+  }, 700);
+}
+
+function clearForm() {
+  ['r-type', 'r-date', 'r-location', 'r-amount', 'r-contact', 'r-desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+
+function trackReport() {
+  const id = document.getElementById('track-id').value.trim().toUpperCase();
+  const resultEl = document.getElementById('track-result');
+  if (!id) { showToast('Please enter a report ID.', 'error'); return; }
+
+  const reports = Reports.getAll();
+  const report = reports.find(r => r.id.toUpperCase() === id);
+
+  if (!report || (report.userEmail !== session.email && !Auth.isAdmin())) {
+    resultEl.innerHTML = `<div class="alert alert-error">✕ No report found with ID "${id}" in your account.</div>`;
+    return;
+  }
+
+  const statusFlow = ['pending', 'in-review', 'verified'];
+  const currentIdx = statusFlow.indexOf(report.status);
+
+  resultEl.innerHTML = `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem;">
+        <div>
+          <div style="font-size:0.8rem;color:var(--text3);font-family:monospace;margin-bottom:4px;">${report.id}</div>
+          <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--heading);">${report.fraudType}</div>
+        </div>
+        ${statusBadge(report.status)}
+      </div>
+      <div style="font-size:0.9rem;color:var(--text2);line-height:1.6;margin-bottom:1rem;">${report.description}</div>
+      <div style="display:flex;gap:1.5rem;font-size:0.85rem;color:var(--text3);">
+        <span>📅 Submitted: ${formatDate(report.createdAt)}</span>
+        <span>🔄 Last updated: ${formatDate(report.updatedAt)}</span>
+        ${report.location ? `<span>📍 ${report.location}</span>` : ''}
+      </div>
+      ${report.status !== 'rejected' ? `
+      <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);">
+        <div style="font-size:0.8rem;color:var(--text3);margin-bottom:0.75rem;">REVIEW PROGRESS</div>
+        <div style="display:flex;gap:0;">
+          ${['Submitted', 'In Review', 'Verified'].map((s, i) => `
+            <div style="flex:1;text-align:center;">
+              <div style="width:28px;height:28px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;
+                background:${i <= currentIdx ? 'var(--primary)' : 'var(--bg3)'};color:${i <= currentIdx ? '#fff' : 'var(--text3)'};
+                border:${i <= currentIdx ? 'none' : '1px solid var(--border)'};">
+                ${i <= currentIdx ? '✓' : i + 1}
+              </div>
+              <div style="font-size:0.75rem;color:${i <= currentIdx ? 'var(--text)' : 'var(--text3)'};">${s}</div>
+            </div>
+            ${i < 2 ? `<div style="flex:1;height:2px;background:${i < currentIdx ? 'var(--primary)' : 'var(--border)'};margin-top:14px;"></div>` : ''}
+          `).join('')}
+        </div>
+      </div>` : '<div class="alert alert-error" style="margin-top:1rem;">This report was reviewed and rejected. Contact support for more information.</div>'}
+    </div>
+  `;
+}
+
+// Init
+loadStats();
+document.getElementById('r-date').max = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
