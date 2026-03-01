@@ -3,19 +3,39 @@
 // ============================================================
 
 // AUTH
-const USERS = [
+const HARDCODED_USERS = [
   { email: 'shanthireddaiah@gmail.com', password: '1234', role: 'user', name: 'Shanthi Reddaiah' },
   { email: 'admin@gmail.com', password: 'admin', role: 'admin', name: 'Platform Admin' }
 ];
 
 const Auth = {
+  getUsers() {
+    const stored = localStorage.getItem('fd_users');
+    const registered = stored ? JSON.parse(stored) : [];
+    return [...HARDCODED_USERS, ...registered];
+  },
+  register(name, email, password) {
+    if (!name || !email || !password)
+      return { success: false, error: 'All fields are required.' };
+    if (password.length < 4)
+      return { success: false, error: 'Password must be at least 4 characters.' };
+    const all = this.getUsers();
+    if (all.find(u => u.email.toLowerCase() === email.toLowerCase()))
+      return { success: false, error: 'An account with this email already exists.' };
+    const newUser = { email: email.toLowerCase(), password, role: 'user', name };
+    const stored = localStorage.getItem('fd_users');
+    const registered = stored ? JSON.parse(stored) : [];
+    registered.push(newUser);
+    localStorage.setItem('fd_users', JSON.stringify(registered));
+    return { success: true, user: newUser };
+  },
   login(email, password) {
-    const user = USERS.find(u => u.email === email && u.password === password);
+    const user = this.getUsers().find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
     if (user) {
       localStorage.setItem('fd_session', JSON.stringify({ email: user.email, role: user.role, name: user.name }));
       return { success: true, user };
     }
-    return { success: false, error: 'Invalid credentials. Please try again.' };
+    return { success: false, error: 'Invalid email or password. Please try again.' };
   },
   logout() {
     localStorage.removeItem('fd_session');
