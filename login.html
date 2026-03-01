@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign In — FraudShield</title>
+<title>Sign In / Sign Up — FraudShield</title>
 <link rel="stylesheet" href="style.css">
 <style>
 .auth-page {
@@ -15,7 +15,6 @@
   position: relative;
   overflow: hidden;
 }
-
 .auth-bg {
   position: absolute; inset: 0;
   background:
@@ -23,7 +22,6 @@
     radial-gradient(ellipse 40% 40% at 80% 40%, rgba(249,115,22,0.07) 0%, transparent 60%);
   pointer-events: none;
 }
-
 .auth-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -38,7 +36,6 @@
   position: relative;
   z-index: 1;
 }
-
 .auth-left {
   background: linear-gradient(135deg, #0d1829 0%, #091525 100%);
   padding: 3rem 2.5rem;
@@ -48,7 +45,6 @@
   position: relative;
   overflow: hidden;
 }
-
 .auth-left::before {
   content: '';
   position: absolute;
@@ -57,7 +53,6 @@
   background: radial-gradient(circle, rgba(59,130,246,0.15), transparent);
   border-radius: 50%;
 }
-
 .auth-left::after {
   content: '';
   position: absolute;
@@ -66,19 +61,15 @@
   background: radial-gradient(circle, rgba(249,115,22,0.1), transparent);
   border-radius: 50%;
 }
-
 .auth-brand { position: relative; z-index: 1; }
 .auth-brand .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 2rem; }
 .auth-brand h2 {
-  font-family: sans-serif;
+  font-family: 'Syne', sans-serif;
   font-size: 1.6rem; font-weight: 800; color: var(--heading);
   line-height: 1.3; margin-bottom: 1rem;
 }
 .auth-brand p { color: var(--text2); font-size: 0.9rem; line-height: 1.7; }
-
-.auth-features {
-  position: relative; z-index: 1;
-}
+.auth-features { position: relative; z-index: 1; }
 .auth-feature-item {
   display: flex; align-items: center; gap: 10px;
   margin-bottom: 0.75rem;
@@ -90,59 +81,60 @@
   border-radius: 8px; display: flex; align-items: center; justify-content: center;
   font-size: 0.85rem; flex-shrink: 0;
 }
-
-.auth-demo-creds {
+.left-badge {
   position: relative; z-index: 1;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(34,197,94,0.08);
+  border: 1px solid rgba(34,197,94,0.2);
   border-radius: var(--radius);
-  padding: 1rem;
+  padding: 1rem 1.1rem;
   margin-top: 1.5rem;
 }
-.auth-demo-creds h4 {
-  font-size: 0.78rem; font-weight: 600; color: var(--text3);
-  letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem;
+.left-badge .badge-title {
+  font-size: 0.78rem; font-weight: 700; color: var(--success);
+  letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.4rem;
 }
-.cred-row {
-  display: flex; justify-content: space-between;
-  margin-bottom: 0.4rem; font-size: 0.82rem;
-}
-.cred-label { color: var(--text3); }
-.cred-val {
-  color: var(--text2); font-family: monospace;
-  font-size: 0.8rem; cursor: pointer;
-}
-.cred-val:hover { color: var(--primary); }
+.left-badge p { color: var(--text2); font-size: 0.85rem; line-height: 1.6; margin: 0; }
 
-.auth-right {
-  padding: 3rem 2.5rem;
-}
+/* RIGHT */
+.auth-right { padding: 2.5rem 2.5rem; }
 
-.auth-right h3 {
-  font-family: sans-serif;
-  font-size: 1.5rem; font-weight: 800; color: var(--heading);
-  margin-bottom: 0.5rem;
+/* TABS */
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.75rem;
 }
-.auth-right .subtitle {
-  color: var(--text2); font-size: 0.9rem; margin-bottom: 2rem;
+.auth-tab {
+  flex: 1; text-align: center;
+  padding: 10px 0;
+  background: none; border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem; font-weight: 600;
+  color: var(--text3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
 }
+.auth-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.auth-tab:hover:not(.active) { color: var(--text2); }
 
-.input-wrapper {
-  position: relative;
-}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* INPUTS */
+.input-wrapper { position: relative; }
 .input-icon {
   position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
   color: var(--text3); font-size: 0.9rem; pointer-events: none;
 }
 .input-wrapper input { padding-left: 36px; }
-
 .show-password {
   position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
   background: none; border: none; color: var(--text3);
   cursor: pointer; font-size: 0.9rem; transition: color 0.2s;
 }
 .show-password:hover { color: var(--text); }
-
 .forgot-link {
   display: block; text-align: right;
   color: var(--text3); font-size: 0.85rem; text-decoration: none;
@@ -150,6 +142,19 @@
 }
 .forgot-link:hover { color: var(--primary); }
 
+/* STRENGTH */
+.strength-bar {
+  height: 4px; border-radius: 2px;
+  background: var(--border); margin-top: 8px; overflow: hidden;
+}
+.strength-fill {
+  height: 100%; border-radius: 2px;
+  transition: width 0.3s ease, background 0.3s ease;
+  width: 0%;
+}
+.strength-label { font-size: 0.75rem; margin-top: 4px; color: var(--text3); }
+
+/* DIVIDER */
 .divider-text {
   display: flex; align-items: center; gap: 1rem;
   margin: 1.25rem 0; color: var(--text3); font-size: 0.85rem;
@@ -173,6 +178,20 @@
 }
 .guest-btn:hover { border-color: var(--border2); color: var(--heading); background: rgba(59,130,246,0.05); }
 
+.checkbox-row {
+  display: flex; align-items: flex-start; gap: 10px; margin-bottom: 1.25rem;
+}
+.checkbox-row input[type="checkbox"] {
+  width: 16px; height: 16px; margin-top: 3px;
+  accent-color: var(--primary); flex-shrink: 0;
+}
+.checkbox-row label {
+  font-size: 0.85rem; color: var(--text2);
+  cursor: pointer; margin: 0; line-height: 1.5;
+}
+.checkbox-row a { color: var(--primary); text-decoration: none; }
+.checkbox-row a:hover { text-decoration: underline; }
+
 @media (max-width: 768px) {
   .auth-container { grid-template-columns: 1fr; }
   .auth-left { display: none; }
@@ -188,15 +207,15 @@
   <div class="auth-page">
     <div class="auth-bg"></div>
     <div class="auth-container">
+
       <!-- LEFT PANEL -->
       <div class="auth-left">
         <div class="auth-brand">
           <div class="logo">
             <div class="logo-icon">🛡</div>
-            <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--heading);">FraudShield</span>
+            <span style="font-family: sans-serif;font-weight:800;font-size:1.1rem;color:var(--heading);">FraudShield</span>
           </div>
-          <h2>Welcome back to the Fight Against Fraud</h2>
-          <p>Sign in to access your fraud reports, track their status, and contribute to a safer digital ecosystem.</p>
+          <p>Create a free account or sign in to submit fraud reports, track their status, and help build a safer digital community.</p>
         </div>
         <div>
           <div class="auth-features">
@@ -204,52 +223,98 @@
             <div class="auth-feature-item"><span>📊</span><span>View real-time status updates</span></div>
             <div class="auth-feature-item"><span>🛡</span><span>Contribute to community safety</span></div>
             <div class="auth-feature-item"><span>📁</span><span>Access your complete report history</span></div>
+            <div class="auth-feature-item"><span>🔔</span><span>Get notified on report decisions</span></div>
           </div>
-          <div class="auth-demo-creds">
-            <h4>🔑 Demo Credentials</h4>
-            <div class="cred-row"><span class="cred-label">User Login:</span><span class="cred-val" onclick="fillCreds('shanthireddaiah@gmail.com','1234')">shanthireddaiah@gmail.com / 1234</span></div>
-            <div class="cred-row"><span class="cred-label">Admin Login:</span><span class="cred-val" onclick="fillCreds('admin@gmail.com','admin')">admin@gmail.com / admin</span></div>
-            <p style="font-size:0.75rem;color:var(--text3);margin-top:0.5rem;">Click credentials to auto-fill →</p>
+          <div class="left-badge">
+            <div class="badge-title">✅ Free Forever</div>
+            <p>Creating an account is completely free. No credit card, no subscription. Your data stays in your browser.</p>
           </div>
         </div>
       </div>
 
       <!-- RIGHT PANEL -->
       <div class="auth-right">
-        <h3>Sign In</h3>
-        <p class="subtitle">Enter your credentials to access your account</p>
 
-        <div id="login-alert"></div>
-
-        <div class="form-group">
-          <label>Email Address</label>
-          <div class="input-wrapper">
-            <span class="input-icon">✉</span>
-            <input type="email" id="email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doLogin()">
-          </div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-signin" onclick="switchAuthTab('signin')">Sign In</button>
+          <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create Account</button>
         </div>
 
-        <div class="form-group">
-          <label>Password</label>
-          <div class="input-wrapper">
-            <span class="input-icon">🔒</span>
-            <input type="password" id="password" placeholder="Enter your password" id="password" onkeydown="if(event.key==='Enter')doLogin()">
-            <button class="show-password" onclick="togglePassword()" id="show-pw-btn">👁</button>
+        <!-- ── SIGN IN ── -->
+        <div class="tab-panel active" id="panel-signin">
+          <div id="signin-alert"></div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-wrapper">
+              <span class="input-icon">✉</span>
+              <input type="email" id="signin-email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doLogin()">
+            </div>
           </div>
-          <a href="forgot.html" class="forgot-link">Forgot password?</a>
+          <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="signin-password" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
+              <button class="show-password" onclick="togglePw('signin-password',this)">👁</button>
+            </div>
+            <a href="forgot.html" class="forgot-link">Forgot password?</a>
+          </div>
+          <button class="btn btn-primary btn-full btn-lg" onclick="doLogin()" id="login-btn">Sign In →</button>
+          <div class="divider-text">or</div>
+          <button class="guest-btn" onclick="guestAccess()">👤 Continue as Guest — No sign-in required</button>
+          <p style="text-align:center;color:var(--text3);font-size:0.82rem;margin-top:1.25rem;">
+            Don't have an account?
+            <a href="#" onclick="switchAuthTab('signup');return false;" style="color:var(--primary);text-decoration:none;">Create one free →</a>
+          </p>
         </div>
 
-        <button class="btn btn-primary btn-full btn-lg" onclick="doLogin()" id="login-btn">Sign In</button>
+        <!-- ── SIGN UP ── -->
+        <div class="tab-panel" id="panel-signup">
+          <div id="signup-alert"></div>
+          <div class="form-group">
+            <label>Full Name *</label>
+            <div class="input-wrapper">
+              <span class="input-icon">👤</span>
+              <input type="text" id="signup-name" placeholder="Your full name" onkeydown="if(event.key==='Enter')doSignup()">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email Address *</label>
+            <div class="input-wrapper">
+              <span class="input-icon">✉</span>
+              <input type="email" id="signup-email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doSignup()">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Password *</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="signup-password" placeholder="Min. 4 characters" oninput="checkStrength(this.value)" onkeydown="if(event.key==='Enter')doSignup()">
+              <button class="show-password" onclick="togglePw('signup-password',this)">👁</button>
+            </div>
+            <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+            <div class="strength-label" id="strength-label"></div>
+          </div>
+          <div class="form-group">
+            <label>Confirm Password *</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input type="password" id="signup-confirm" placeholder="Re-enter your password" onkeydown="if(event.key==='Enter')doSignup()">
+            </div>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="terms-check">
+            <label for="terms-check">I agree to the <a href="terms.html" target="_blank">Terms &amp; Conditions</a> and understand this is a demonstration platform.</label>
+          </div>
+          <button class="btn btn-primary btn-full btn-lg" onclick="doSignup()" id="signup-btn">Create Account →</button>
+          <div class="divider-text">or</div>
+          <button class="guest-btn" onclick="guestAccess()">👤 Continue as Guest — No sign-in required</button>
+          <p style="text-align:center;color:var(--text3);font-size:0.82rem;margin-top:1.25rem;">
+            Already have an account?
+            <a href="#" onclick="switchAuthTab('signin');return false;" style="color:var(--primary);text-decoration:none;">Sign in →</a>
+          </p>
+        </div>
 
-        <div class="divider-text">or</div>
-
-        <button class="guest-btn" onclick="guestAccess()">
-          👤 Continue as Guest — No sign-in required
-        </button>
-
-        <p style="text-align:center;color:var(--text3);font-size:0.82rem;margin-top:1.5rem;">
-          By signing in, you agree to our <a href="terms.html" style="color:var(--primary);text-decoration:none;">Terms & Conditions</a>
-        </p>
       </div>
     </div>
   </div>
@@ -259,55 +324,120 @@
 <script>
 document.getElementById('nav-placeholder').innerHTML = renderNav('login.html');
 
-// Redirect if already logged in
 if (Auth.isLoggedIn()) {
   const s = Auth.getSession();
   window.location.href = s.role === 'admin' ? 'admin.html' : 'dashboard.html';
 }
 
+if (window.location.search.includes('tab=signup')) {
+  switchAuthTab('signup');
+}
+
+function switchAuthTab(tab) {
+  ['signin','signup'].forEach(t => {
+    document.getElementById('tab-' + t).classList.remove('active');
+    document.getElementById('panel-' + t).classList.remove('active');
+  });
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  document.getElementById('signin-alert').innerHTML = '';
+  document.getElementById('signup-alert').innerHTML = '';
+}
+
 function doLogin() {
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const alertEl = document.getElementById('login-alert');
-  const btn = document.getElementById('login-btn');
+  const email    = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value;
+  const alertEl  = document.getElementById('signin-alert');
+  const btn      = document.getElementById('login-btn');
 
   if (!email || !password) {
-    alertEl.innerHTML = `<div class="alert alert-error">✕ Please enter both email and password.</div>`;
-    return;
+    alertEl.innerHTML = `<div class="alert alert-error">&#x2715; Please enter both email and password.</div>`; return;
   }
-
-  btn.innerHTML = '<div class="spinner"></div> Signing in...';
+  btn.innerHTML = '<div class="spinner"></div>&nbsp;Signing in...';
   btn.disabled = true;
 
   setTimeout(() => {
     const result = Auth.login(email, password);
     if (result.success) {
-      alertEl.innerHTML = `<div class="alert alert-success">✓ Welcome back, ${result.user.name}! Redirecting...</div>`;
+      alertEl.innerHTML = `<div class="alert alert-success">&#x2713; Welcome back, ${result.user.name}! Redirecting...</div>`;
       setTimeout(() => {
         window.location.href = result.user.role === 'admin' ? 'admin.html' : 'dashboard.html';
       }, 900);
     } else {
-      alertEl.innerHTML = `<div class="alert alert-error">✕ ${result.error}</div>`;
-      btn.innerHTML = 'Sign In';
+      alertEl.innerHTML = `<div class="alert alert-error">&#x2715; ${result.error}</div>`;
+      btn.innerHTML = 'Sign In &rarr;';
       btn.disabled = false;
     }
   }, 600);
 }
 
-function togglePassword() {
-  const pw = document.getElementById('password');
-  pw.type = pw.type === 'password' ? 'text' : 'password';
+function doSignup() {
+  const name     = document.getElementById('signup-name').value.trim();
+  const email    = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const confirm  = document.getElementById('signup-confirm').value;
+  const agreed   = document.getElementById('terms-check').checked;
+  const alertEl  = document.getElementById('signup-alert');
+  const btn      = document.getElementById('signup-btn');
+
+  if (!name || !email || !password || !confirm) {
+    alertEl.innerHTML = `<div class="alert alert-error">&#x2715; Please fill in all fields.</div>`; return;
+  }
+  if (password !== confirm) {
+    alertEl.innerHTML = `<div class="alert alert-error">&#x2715; Passwords do not match.</div>`; return;
+  }
+  if (!agreed) {
+    alertEl.innerHTML = `<div class="alert alert-error">&#x2715; Please agree to the Terms &amp; Conditions to continue.</div>`; return;
+  }
+
+  btn.innerHTML = '<div class="spinner"></div>&nbsp;Creating account...';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    const result = Auth.register(name, email, password);
+    if (result.success) {
+      Auth.login(email, password);
+      alertEl.innerHTML = `<div class="alert alert-success">&#x2713; Account created! Welcome, ${name}! Redirecting to your dashboard...</div>`;
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+    } else {
+      alertEl.innerHTML = `<div class="alert alert-error">&#x2715; ${result.error}</div>`;
+      btn.innerHTML = 'Create Account &rarr;';
+      btn.disabled = false;
+    }
+  }, 700);
 }
 
-function fillCreds(email, password) {
-  document.getElementById('email').value = email;
-  document.getElementById('password').value = password;
-  showToast('Credentials filled! Click Sign In.', 'info');
+function togglePw(id, btn) {
+  const el = document.getElementById(id);
+  el.type = el.type === 'password' ? 'text' : 'password';
+  btn.textContent = el.type === 'password' ? '👁' : '🙈';
 }
 
-function guestAccess() {
-  window.location.href = 'index.html';
+function checkStrength(val) {
+  const fill  = document.getElementById('strength-fill');
+  const label = document.getElementById('strength-label');
+  if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+  let score = 0;
+  if (val.length >= 4)  score++;
+  if (val.length >= 8)  score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const levels = [
+    { pct:'20%', color:'#ef4444', text:'Very Weak' },
+    { pct:'40%', color:'#f97316', text:'Weak' },
+    { pct:'60%', color:'#eab308', text:'Fair' },
+    { pct:'80%', color:'#22c55e', text:'Strong' },
+    { pct:'100%', color:'#16a34a', text:'Very Strong' },
+  ];
+  const lvl = levels[Math.min(score - 1, 4)] || levels[0];
+  fill.style.width = lvl.pct;
+  fill.style.background = lvl.color;
+  label.style.color = lvl.textContent = lvl.text;
+  label.textContent = lvl.text;
 }
+
+function guestAccess() { window.location.href = 'index.html'; }
 </script>
 </body>
 </html>
