@@ -7,139 +7,196 @@
 <link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
+/* ── LAYOUT ── */
 .admin-layout {
-  display: grid;
-  grid-template-columns: 250px 1fr;
+  display: grid; grid-template-columns: 240px 1fr;
   min-height: calc(100vh - 64px);
 }
-
 .admin-sidebar {
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
-  padding: 1.5rem 1rem;
-  position: sticky;
-  top: 64px;
-  height: calc(100vh - 64px);
-  overflow-y: auto;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  padding: 1.5rem 1rem; position: sticky; top: 64px;
+  height: calc(100vh - 64px); overflow-y: auto;
 }
-
-.admin-sidebar .sidebar-role {
-  background: rgba(59,130,246,0.1);
-  border: 1px solid rgba(59,130,246,0.2);
-  border-radius: var(--radius);
-  padding: 10px 12px;
-  margin-bottom: 1.5rem;
-  font-size: 0.82rem;
-  color: var(--primary);
+.sidebar-role {
+  background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2);
+  border-radius: var(--radius); padding: 10px 12px; margin-bottom: 1.5rem;
+  font-size: 0.82rem; color: var(--primary);
 }
-.admin-sidebar .sidebar-role strong { display: block; color: var(--heading); font-size: 0.9rem; }
-
+.sidebar-role strong { display: block; color: var(--heading); font-size: 0.9rem; }
+.sidebar-section-label {
+  font-size: 0.7rem; font-weight: 700; color: var(--text3);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0 0.5rem; margin: 1.25rem 0 0.4rem;
+}
 .sidebar-btn {
   display: flex; align-items: center; gap: 10px;
-  width: 100%; padding: 9px 12px;
-  background: none; border: none;
+  width: 100%; padding: 9px 12px; background: none; border: none;
   color: var(--text2); font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem; font-weight: 500;
-  border-radius: var(--radius); cursor: pointer;
-  transition: all 0.2s; text-align: left;
-  margin-bottom: 2px;
+  font-size: 0.88rem; font-weight: 500; border-radius: var(--radius);
+  cursor: pointer; transition: all 0.2s; text-align: left; margin-bottom: 2px;
 }
 .sidebar-btn:hover { background: var(--glass); color: var(--heading); }
-.sidebar-btn.active { background: rgba(59,130,246,0.1); color: var(--primary); }
+.sidebar-btn.active { background: rgba(59,130,246,0.1); color: var(--primary); border: 1px solid rgba(59,130,246,0.15); }
 
 .admin-content { padding: 2.5rem 2rem; }
-
 .admin-header {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 2rem; flex-wrap: gap;
+  margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
 }
-.admin-header h1 {
-  font-family: sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--heading);
-}
+.admin-header h1 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--heading); }
 
-/* KPI GRID */
-.kpi-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2.5rem;
+/* ── TABS ── */
+.page-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 2rem; gap: 0; }
+.page-tab {
+  padding: 10px 22px; background: none; border: none; cursor: pointer;
+  color: var(--text2); font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 500;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s;
 }
-.kpi-card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); padding: 1.25rem;
-  text-align: center;
-}
-.kpi-val {
-  font-family: sans-serif; font-size: 2rem; font-weight: 800; color: var(--heading);
-  line-height: 1;
-}
-.kpi-label { font-size: 0.78rem; color: var(--text3); margin-top: 0.4rem; }
-.kpi-dot { width: 8px; height: 8px; border-radius: 50%; margin: 0 auto 0.6rem; }
-
-/* CHARTS GRID */
-.charts-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;
-}
-.chart-card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); padding: 1.5rem;
-}
-.chart-card h3 {
-  font-family: sans-serif; font-size: 0.95rem; font-weight: 700;
-  color: var(--heading); margin-bottom: 1.25rem;
-}
-.chart-wrap { position: relative; height: 220px; }
-
-.chart-wide { grid-column: 1 / -1; }
-
-/* REPORTS TABLE */
-.reports-card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); overflow: hidden;
-}
-.reports-card-header {
-  padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  flex-wrap: wrap;
-}
-.reports-card-header h3 {
-  font-family: sans-serif; font-size: 1rem; font-weight: 700; color: var(--heading);
-}
-
-.filter-bar {
-  display: flex; gap: 0.75rem; flex-wrap: wrap;
-}
-.filter-bar select, .filter-bar input {
-  width: auto; padding: 7px 12px; font-size: 0.85rem;
-}
-
-.table-wrap { overflow-x: auto; }
-
-.status-select {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 8px; padding: 5px 8px;
-  color: var(--text); font-size: 0.82rem;
-  font-family: 'DM Sans', sans-serif; cursor: pointer;
-}
-
+.page-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.page-tab:hover:not(.active) { color: var(--heading); }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
-.page-tabs {
-  display: flex; border-bottom: 1px solid var(--border); margin-bottom: 2rem;
+/* ── KPI ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 1rem; margin-bottom: 2.5rem; }
+.kpi-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.25rem; text-align: center;
 }
-.page-tab {
-  padding: 10px 20px; background: none; border: none;
-  color: var(--text2); font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem; font-weight: 500; cursor: pointer;
-  border-bottom: 2px solid transparent; margin-bottom: -1px;
-  transition: all 0.2s;
+.kpi-val { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--heading); line-height: 1; }
+.kpi-label { font-size: 0.78rem; color: var(--text3); margin-top: 0.4rem; }
+.kpi-dot { width: 8px; height: 8px; border-radius: 50%; margin: 0 auto 0.6rem; }
+
+/* ── CHARTS ── */
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+.chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; }
+.chart-card h3 { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--heading); margin-bottom: 1.25rem; }
+.chart-wrap { position: relative; height: 220px; }
+.chart-wide { grid-column: 1 / -1; }
+
+/* ── REPORTS TABLE ── */
+.panel-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.panel-card-header {
+  padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
 }
-.page-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.panel-card-header h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--heading); }
+.filter-bar { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.filter-bar select, .filter-bar input { width: auto; padding: 7px 12px; font-size: 0.85rem; }
+.table-wrap { overflow-x: auto; }
+
+/* ── USER TABLE ── */
+.user-row-status { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── REVIEW MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+  z-index: 9000; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s; padding: 1rem;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.big-modal {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); width: 100%; max-width: 740px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 60px rgba(59,130,246,0.1);
+  transform: translateY(20px); transition: transform 0.25s;
+}
+.modal-overlay.open .big-modal { transform: translateY(0); }
+.big-modal-header {
+  padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between;
+  position: sticky; top: 0; background: var(--bg2); z-index: 10;
+}
+.big-modal-header h2 { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--heading); }
+.modal-x {
+  background: none; border: none; color: var(--text3); font-size: 1.1rem;
+  cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all 0.2s; flex-shrink: 0;
+}
+.modal-x:hover { color: var(--heading); background: var(--glass); }
+.modal-body { padding: 1.75rem 2rem; }
+
+/* ── DETAIL GRID ── */
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+.detail-item { background: var(--bg3); border-radius: var(--radius); padding: 0.75rem 1rem; }
+.detail-item .d-lbl { font-size: 0.75rem; color: var(--text3); margin-bottom: 3px; }
+.detail-item .d-val { font-size: 0.92rem; color: var(--heading); font-weight: 500; }
+.desc-box {
+  background: var(--bg3); border-left: 3px solid var(--border2);
+  border-radius: var(--radius); padding: 1rem 1.1rem;
+  font-size: 0.92rem; color: var(--text2); line-height: 1.7; margin-bottom: 1.5rem;
+}
+.section-lbl {
+  font-size: 0.72rem; font-weight: 700; color: var(--text3);
+  letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* ── EXISTING REPLY ── */
+.existing-reply {
+  background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2);
+  border-radius: var(--radius); padding: 1rem 1.1rem; margin-bottom: 1.5rem;
+}
+.existing-reply .er-meta {
+  font-size: 0.78rem; font-weight: 700; color: var(--success);
+  margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px;
+}
+.existing-reply .er-text { font-size: 0.92rem; color: var(--text2); line-height: 1.7; }
+
+/* ── REPLY FORM ── */
+.reply-form {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.25rem;
+}
+.reply-form-title {
+  font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700;
+  color: var(--heading); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;
+}
+.tpl-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.tpl-btn {
+  background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 20px; padding: 4px 12px; font-size: 0.76rem; font-weight: 600;
+  color: var(--primary); cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.tpl-btn:hover { background: rgba(59,130,246,0.18); }
+.reply-actions { display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+.reply-actions select { width: auto; padding: 8px 12px; font-size: 0.88rem; }
+
+/* ── ROW ACTIONS ── */
+.btn-review {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+  background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2);
+  color: var(--primary); cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-review:hover { background: rgba(59,130,246,0.2); }
+.replied-tag {
+  display: inline-flex; align-items: center; gap: 3px; font-size: 0.74rem;
+  color: var(--success); background: rgba(34,197,94,0.08);
+  border: 1px solid rgba(34,197,94,0.2); border-radius: 12px; padding: 2px 8px;
+}
+
+/* ── CONFIRM MODAL (small) ── */
+.confirm-modal { max-width: 420px; }
+.confirm-modal .modal-body { text-align: center; }
+.confirm-modal .c-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.confirm-modal h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--heading); margin-bottom: 0.5rem; }
+.confirm-modal p { color: var(--text2); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem; }
+.confirm-btns { display: flex; gap: 0.75rem; justify-content: center; }
 
 @media (max-width: 960px) {
   .admin-layout { grid-template-columns: 1fr; }
   .admin-sidebar { display: none; }
-  .kpi-grid { grid-template-columns: repeat(3, 1fr); }
-  .charts-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(3,1fr); }
+  .charts-grid { grid-column: 1fr; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .modal-body { padding: 1.25rem; }
+  .big-modal-header { padding: 1.25rem; }
 }
 </style>
 </head>
@@ -147,69 +204,132 @@
 <div id="nav-placeholder"></div>
 <div id="toast-container"></div>
 
+<!-- ══ REPORT REVIEW MODAL ══ -->
+<div class="modal-overlay" id="review-overlay" onclick="if(event.target===this)closeReview()">
+  <div class="big-modal">
+    <div class="big-modal-header">
+      <div>
+        <div style="font-size:0.75rem;color:var(--text3);font-family:monospace;margin-bottom:3px;" id="rm-id"></div>
+        <h2 id="rm-title">Report Review</h2>
+      </div>
+      <button class="modal-x" onclick="closeReview()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Report details -->
+      <div class="section-lbl">&#x1F4CB; Report Information</div>
+      <div class="detail-grid" id="rm-details"></div>
+
+      <div class="section-lbl">&#x1F4DD; Incident Description</div>
+      <div class="desc-box" id="rm-desc"></div>
+
+      <!-- Existing reply (shown if already replied) -->
+      <div id="rm-existing-reply" style="display:none;">
+        <div class="section-lbl">&#x2705; Previous Admin Response</div>
+        <div class="existing-reply">
+          <div class="er-meta" id="rm-reply-meta"></div>
+          <div class="er-text" id="rm-reply-text"></div>
+        </div>
+      </div>
+
+      <!-- Reply form -->
+      <div class="reply-form">
+        <div class="reply-form-title">&#x1F4AC; Write Your Response to the User</div>
+
+        <div class="section-lbl" style="margin-bottom:0.5rem;">Quick Templates</div>
+        <div class="tpl-bar" id="tpl-bar"></div>
+
+        <div class="form-group" style="margin-bottom:0.75rem;">
+          <textarea id="rm-reply-input" rows="5"
+            placeholder="Write a clear, helpful response addressing the user's fraud report. Include what action has been taken, advice for the user, and next steps if any..."></textarea>
+        </div>
+
+        <div class="reply-actions">
+          <div>
+            <label style="font-size:0.82rem;color:var(--text3);display:block;margin-bottom:4px;">Update Status</label>
+            <select id="rm-status-select">
+              <option value="pending">Pending</option>
+              <option value="in-review">In Review</option>
+              <option value="verified">Verified — Confirmed Fraud</option>
+              <option value="rejected">Rejected — Not Fraud</option>
+            </select>
+          </div>
+          <div style="margin-top:1.25rem;">
+            <button class="btn btn-primary" onclick="submitReply()" id="reply-submit-btn">&#x1F4E8; Send Response</button>
+            <button class="btn btn-ghost" style="margin-left:0.5rem;" onclick="closeReview()">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONFIRM MODAL (deactivate / delete) ══ -->
+<div class="modal-overlay" id="confirm-overlay" onclick="if(event.target===this)closeConfirm()">
+  <div class="big-modal confirm-modal">
+    <div class="modal-body">
+      <div class="c-icon" id="confirm-icon">⚠️</div>
+      <h3 id="confirm-title">Are you sure?</h3>
+      <p id="confirm-msg">This action cannot be undone.</p>
+      <div class="confirm-btns">
+        <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
+        <button class="btn btn-danger" id="confirm-ok-btn" onclick="confirmAction()">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <main>
   <div class="admin-layout">
+
+    <!-- SIDEBAR -->
     <aside class="admin-sidebar">
       <div class="sidebar-role">
         <strong id="admin-name">Admin</strong>
         Platform Administrator
       </div>
-      <div style="margin-bottom:0.4rem;font-size:0.72rem;color:var(--text3);padding:0 0.5rem;letter-spacing:0.1em;text-transform:uppercase;">Navigation</div>
-      <button class="sidebar-btn active" onclick="switchTab('analytics')">📊 Analytics</button>
-      <button class="sidebar-btn" onclick="switchTab('reports')">📋 All Reports</button>
-      <button class="sidebar-btn" onclick="window.location.href='profile.html'">👤 Profile</button>
+      <div class="sidebar-section-label">Manage</div>
+      <button class="sidebar-btn active" id="sb-analytics" onclick="switchTab('analytics')">📊 Analytics</button>
+      <button class="sidebar-btn" id="sb-reports" onclick="switchTab('reports')">📋 Reports</button>
+      <button class="sidebar-btn" id="sb-users" onclick="switchTab('users')">👥 User Accounts</button>
+      <div class="sidebar-section-label">Account</div>
+      <button class="sidebar-btn" onclick="window.location.href='profile.html'">👤 My Profile</button>
       <button class="sidebar-btn" onclick="Auth.logout()">→ Sign Out</button>
     </aside>
 
+    <!-- CONTENT -->
     <div class="admin-content">
       <div class="admin-header">
         <div>
-          <h1>Admin Panel</h1>
-          <p style="color:var(--text2);font-size:0.9rem;margin-top:0.2rem;">Fraud report management and platform analytics</p>
+          <h1 id="page-title">Analytics Dashboard</h1>
+          <p style="color:var(--text2);font-size:0.9rem;margin-top:0.2rem;" id="page-sub">Platform overview and fraud statistics</p>
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="refreshAll()">↻ Refresh Data</button>
+        <button class="btn btn-ghost btn-sm" onclick="refreshAll()">↻ Refresh</button>
       </div>
 
-      <!-- TABS -->
       <div class="page-tabs">
-        <button class="page-tab active" id="tab-analytics" onclick="switchTab('analytics')">📊 Analytics Dashboard</button>
-        <button class="page-tab" id="tab-reports" onclick="switchTab('reports')">📋 Report Management</button>
+        <button class="page-tab active" id="tab-analytics" onclick="switchTab('analytics')">📊 Analytics</button>
+        <button class="page-tab" id="tab-reports" onclick="switchTab('reports')">📋 Reports</button>
+        <button class="page-tab" id="tab-users" onclick="switchTab('users')">👥 User Accounts</button>
       </div>
 
-      <!-- ANALYTICS TAB -->
+      <!-- ══ ANALYTICS TAB ══ -->
       <div class="tab-panel active" id="panel-analytics">
-        <!-- KPI ROW -->
         <div class="kpi-grid" id="kpi-grid"></div>
-
-        <!-- CHARTS -->
         <div class="charts-grid">
-          <div class="chart-card">
-            <h3>🎯 Fraud Type Distribution</h3>
-            <div class="chart-wrap"><canvas id="chart-types"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <h3>📊 Status Breakdown</h3>
-            <div class="chart-wrap"><canvas id="chart-status"></canvas></div>
-          </div>
-          <div class="chart-card chart-wide">
-            <h3>📈 Monthly Report Trend (2025)</h3>
-            <div class="chart-wrap" style="height:200px;"><canvas id="chart-monthly"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <h3>📍 Location-wise Reports</h3>
-            <div class="chart-wrap"><canvas id="chart-location"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <h3>💰 Amount Lost by Fraud Type</h3>
-            <div class="chart-wrap"><canvas id="chart-amount"></canvas></div>
-          </div>
+          <div class="chart-card"><h3>🎯 Fraud Type Distribution</h3><div class="chart-wrap"><canvas id="chart-types"></canvas></div></div>
+          <div class="chart-card"><h3>📊 Status Breakdown</h3><div class="chart-wrap"><canvas id="chart-status"></canvas></div></div>
+          <div class="chart-card chart-wide"><h3>📈 Monthly Report Trend</h3><div class="chart-wrap" style="height:200px;"><canvas id="chart-monthly"></canvas></div></div>
+          <div class="chart-card"><h3>📍 Location-wise Reports</h3><div class="chart-wrap"><canvas id="chart-location"></canvas></div></div>
+          <div class="chart-card"><h3>💰 Amount Lost by Fraud Type</h3><div class="chart-wrap"><canvas id="chart-amount"></canvas></div></div>
         </div>
       </div>
 
-      <!-- REPORTS TAB -->
+      <!-- ══ REPORTS TAB ══ -->
       <div class="tab-panel" id="panel-reports">
-        <div class="reports-card">
-          <div class="reports-card-header">
+        <div class="panel-card">
+          <div class="panel-card-header">
             <h3>All Submitted Reports</h3>
             <div class="filter-bar">
               <select id="filter-status" onchange="renderReports()">
@@ -228,7 +348,7 @@
                 <option value="Investment Fraud">Investment Fraud</option>
                 <option value="UPI/Payment Fraud">UPI/Payment Fraud</option>
               </select>
-              <input type="text" id="filter-search" placeholder="Search reports..." oninput="renderReports()" style="width:180px;">
+              <input type="text" id="filter-search" placeholder="Search..." oninput="renderReports()" style="width:160px;">
             </div>
           </div>
           <div class="table-wrap">
@@ -236,274 +356,408 @@
               <thead>
                 <tr>
                   <th>Report ID</th>
-                  <th>User</th>
+                  <th>Submitted By</th>
                   <th>Fraud Type</th>
                   <th>Location</th>
                   <th>Amount</th>
                   <th>Date</th>
                   <th>Status</th>
-                  <th>Update Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
-              <tbody id="reports-table-body"></tbody>
+              <tbody id="reports-tbody"></tbody>
             </table>
           </div>
-          <div id="no-reports" style="display:none;padding:3rem;text-align:center;color:var(--text3);">No reports found.</div>
+          <div id="no-reports" style="display:none;padding:3rem;text-align:center;color:var(--text3);">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">📭</div>No reports found.
+          </div>
         </div>
       </div>
+
+      <!-- ══ USER ACCOUNTS TAB ══ -->
+      <div class="tab-panel" id="panel-users">
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <div>
+              <h3>User Account Management</h3>
+              <p style="color:var(--text3);font-size:0.82rem;margin-top:3px;">Deactivate accounts to block login. Delete accounts to permanently remove user and their reports.</p>
+            </div>
+            <input type="text" id="user-search" placeholder="Search users..." oninput="renderUsers()" style="width:180px;">
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Reports</th>
+                  <th>Joined</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody"></tbody>
+            </table>
+          </div>
+          <div id="no-users" style="display:none;padding:3rem;text-align:center;color:var(--text3);">No users found.</div>
+        </div>
+      </div>
+
     </div>
   </div>
 </main>
 
 <div id="footer-placeholder"></div>
-
 <script src="app.js"></script>
 <script>
 document.getElementById('nav-placeholder').innerHTML = renderNav('admin.html');
 document.getElementById('footer-placeholder').innerHTML = renderFooter();
-
 if (!Auth.requireAdmin()) {}
-
 const session = Auth.getSession();
 document.getElementById('admin-name').textContent = session.name;
 
+// ── CHARTS ──
 let chartInstances = {};
-
-function destroyChart(id) {
-  if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
-}
-
-const CHART_COLORS = ['#3b82f6','#f97316','#22c55e','#ef4444','#eab308','#38bdf8','#a855f7'];
-const CHART_DEFAULTS = {
+function destroyChart(id) { if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; } }
+const CC = ['#3b82f6','#f97316','#22c55e','#ef4444','#eab308','#38bdf8','#a855f7'];
+const CD = {
   responsive: true, maintainAspectRatio: false,
   plugins: { legend: { labels: { color: '#94a3b8', font: { family: 'DM Sans', size: 12 }, boxWidth: 12, padding: 16 } } }
 };
 
 function loadKPIs() {
-  const reports = Reports.getAll();
-  const total = reports.length;
-  const pending = reports.filter(r => r.status === 'pending').length;
-  const verified = reports.filter(r => r.status === 'verified').length;
-  const rejected = reports.filter(r => r.status === 'rejected').length;
-  const inReview = reports.filter(r => r.status === 'in-review').length;
+  const r = Reports.getAll();
+  const users = Auth.getAllUsersForAdmin ? Auth.getAllUsersForAdmin() : [];
   document.getElementById('kpi-grid').innerHTML = `
-    <div class="kpi-card"><div class="kpi-dot" style="background:#3b82f6;"></div><div class="kpi-val">${total}</div><div class="kpi-label">Total Reports</div></div>
-    <div class="kpi-card"><div class="kpi-dot" style="background:#eab308;"></div><div class="kpi-val" style="color:var(--warning)">${pending}</div><div class="kpi-label">Pending</div></div>
-    <div class="kpi-card"><div class="kpi-dot" style="background:#38bdf8;"></div><div class="kpi-val" style="color:var(--info)">${inReview}</div><div class="kpi-label">In Review</div></div>
-    <div class="kpi-card"><div class="kpi-dot" style="background:#22c55e;"></div><div class="kpi-val" style="color:var(--success)">${verified}</div><div class="kpi-label">Verified</div></div>
-    <div class="kpi-card"><div class="kpi-dot" style="background:#ef4444;"></div><div class="kpi-val" style="color:var(--danger)">${rejected}</div><div class="kpi-label">Rejected</div></div>
+    <div class="kpi-card"><div class="kpi-dot" style="background:#3b82f6;"></div><div class="kpi-val">${r.length}</div><div class="kpi-label">Total Reports</div></div>
+    <div class="kpi-card"><div class="kpi-dot" style="background:#eab308;"></div><div class="kpi-val" style="color:var(--warning)">${r.filter(x=>x.status==='pending').length}</div><div class="kpi-label">Pending</div></div>
+    <div class="kpi-card"><div class="kpi-dot" style="background:#38bdf8;"></div><div class="kpi-val" style="color:var(--info)">${r.filter(x=>x.status==='in-review').length}</div><div class="kpi-label">In Review</div></div>
+    <div class="kpi-card"><div class="kpi-dot" style="background:#22c55e;"></div><div class="kpi-val" style="color:var(--success)">${r.filter(x=>x.status==='verified').length}</div><div class="kpi-label">Verified</div></div>
+    <div class="kpi-card"><div class="kpi-dot" style="background:#ef4444;"></div><div class="kpi-val" style="color:var(--danger)">${r.filter(x=>x.status==='rejected').length}</div><div class="kpi-label">Rejected</div></div>
   `;
 }
 
 function loadCharts() {
   const reports = Reports.getAll();
-
-  // FRAUD TYPES
   const typeCounts = {};
-  reports.forEach(r => typeCounts[r.fraudType] = (typeCounts[r.fraudType] || 0) + 1);
+  reports.forEach(r => typeCounts[r.fraudType] = (typeCounts[r.fraudType]||0)+1);
   destroyChart('types');
   chartInstances['types'] = new Chart(document.getElementById('chart-types'), {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(typeCounts),
-      datasets: [{ data: Object.values(typeCounts), backgroundColor: CHART_COLORS, borderWidth: 2, borderColor: '#0f1420' }]
-    },
-    options: { ...CHART_DEFAULTS, cutout: '65%' }
+    type:'doughnut',
+    data:{ labels:Object.keys(typeCounts), datasets:[{ data:Object.values(typeCounts), backgroundColor:CC, borderWidth:2, borderColor:'#0f1420' }] },
+    options:{...CD, cutout:'65%'}
   });
 
-  // STATUS
-  const statusCounts = { 'Pending': 0, 'In Review': 0, 'Verified': 0, 'Rejected': 0 };
-  reports.forEach(r => {
-    if (r.status === 'pending') statusCounts['Pending']++;
-    else if (r.status === 'in-review') statusCounts['In Review']++;
-    else if (r.status === 'verified') statusCounts['Verified']++;
-    else if (r.status === 'rejected') statusCounts['Rejected']++;
-  });
+  const sc = {'Pending':0,'In Review':0,'Verified':0,'Rejected':0};
+  reports.forEach(r => { if(r.status==='pending') sc['Pending']++; else if(r.status==='in-review') sc['In Review']++; else if(r.status==='verified') sc['Verified']++; else if(r.status==='rejected') sc['Rejected']++; });
   destroyChart('status');
   chartInstances['status'] = new Chart(document.getElementById('chart-status'), {
-    type: 'bar',
-    data: {
-      labels: Object.keys(statusCounts),
-      datasets: [{
-        label: 'Reports',
-        data: Object.values(statusCounts),
-        backgroundColor: ['rgba(234,179,8,0.7)', 'rgba(56,189,248,0.7)', 'rgba(34,197,94,0.7)', 'rgba(239,68,68,0.7)'],
-        borderColor: ['#eab308', '#38bdf8', '#22c55e', '#ef4444'],
-        borderWidth: 1, borderRadius: 6,
-      }]
-    },
-    options: {
-      ...CHART_DEFAULTS,
-      scales: {
-        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b' } },
-        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', stepSize: 1 } }
-      },
-      plugins: { legend: { display: false } }
-    }
+    type:'bar',
+    data:{ labels:Object.keys(sc), datasets:[{ data:Object.values(sc), backgroundColor:['rgba(234,179,8,.7)','rgba(56,189,248,.7)','rgba(34,197,94,.7)','rgba(239,68,68,.7)'], borderColor:['#eab308','#38bdf8','#22c55e','#ef4444'], borderWidth:1, borderRadius:6 }] },
+    options:{...CD, scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',stepSize:1}}}, plugins:{legend:{display:false}}}
   });
 
-  // MONTHLY TREND (mix of real + simulated for demo)
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const monthlyCounts = new Array(12).fill(0);
-  reports.forEach(r => {
-    const m = new Date(r.createdAt).getMonth();
-    monthlyCounts[m]++;
-  });
-  // Add simulated historical data for richer chart
-  const simulated = [3, 5, 4, 7, 6, 8, 10, 9, 12, 15, 11, 0];
-  const combined = monthlyCounts.map((v, i) => Math.max(v, simulated[i]));
-
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const mc=new Array(12).fill(0);
+  reports.forEach(r => mc[new Date(r.createdAt).getMonth()]++);
+  const sim=[3,5,4,7,6,8,10,9,12,15,11,0];
   destroyChart('monthly');
   chartInstances['monthly'] = new Chart(document.getElementById('chart-monthly'), {
-    type: 'line',
-    data: {
-      labels: months,
-      datasets: [{
-        label: 'Reports',
-        data: combined,
-        borderColor: '#3b82f6',
-        backgroundColor: 'rgba(59,130,246,0.08)',
-        fill: true, tension: 0.4,
-        pointBackgroundColor: '#3b82f6', pointRadius: 4
-      }]
-    },
-    options: {
-      ...CHART_DEFAULTS,
-      scales: {
-        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b' } },
-        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', stepSize: 2 } }
-      },
-      plugins: { legend: { display: false } }
-    }
+    type:'line',
+    data:{ labels:months, datasets:[{ label:'Reports', data:mc.map((v,i)=>Math.max(v,sim[i])), borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,.08)', fill:true, tension:.4, pointBackgroundColor:'#3b82f6', pointRadius:4 }] },
+    options:{...CD, scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',stepSize:2}}}, plugins:{legend:{display:false}}}
   });
 
-  // LOCATION
-  const locCounts = {};
-  reports.forEach(r => { if (r.location) locCounts[r.location] = (locCounts[r.location] || 0) + 1; });
-  // Supplement with demo cities
-  ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune'].forEach(c => {
-    if (!locCounts[c]) locCounts[c] = Math.floor(Math.random() * 4) + 1;
-  });
-  const sortedLocs = Object.entries(locCounts).sort((a,b) => b[1]-a[1]).slice(0,6);
+  const lc={};
+  reports.forEach(r => { if(r.location) lc[r.location]=(lc[r.location]||0)+1; });
+  ['Mumbai','Delhi','Bangalore','Hyderabad','Chennai','Pune'].forEach(c => { if(!lc[c]) lc[c]=Math.floor(Math.random()*4)+1; });
+  const sl=Object.entries(lc).sort((a,b)=>b[1]-a[1]).slice(0,6);
   destroyChart('location');
   chartInstances['location'] = new Chart(document.getElementById('chart-location'), {
-    type: 'bar',
-    data: {
-      labels: sortedLocs.map(l => l[0]),
-      datasets: [{
-        label: 'Reports',
-        data: sortedLocs.map(l => l[1]),
-        backgroundColor: 'rgba(249,115,22,0.6)',
-        borderColor: '#f97316', borderWidth: 1, borderRadius: 6
-      }]
-    },
-    options: {
-      ...CHART_DEFAULTS, indexAxis: 'y',
-      scales: {
-        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b' } },
-        y: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-      },
-      plugins: { legend: { display: false } }
-    }
+    type:'bar', data:{ labels:sl.map(l=>l[0]), datasets:[{ data:sl.map(l=>l[1]), backgroundColor:'rgba(249,115,22,.6)', borderColor:'#f97316', borderWidth:1, borderRadius:6 }] },
+    options:{...CD, indexAxis:'y', scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b'}},y:{grid:{display:false},ticks:{color:'#94a3b8'}}}, plugins:{legend:{display:false}}}
   });
 
-  // AMOUNT BY TYPE
-  const amountByType = {};
-  reports.forEach(r => {
-    if (r.amount) amountByType[r.fraudType] = (amountByType[r.fraudType] || 0) + Number(r.amount);
-  });
-  const sortedAmounts = Object.entries(amountByType).sort((a,b) => b[1]-a[1]);
+  const ab={};
+  reports.forEach(r => { if(r.amount) ab[r.fraudType]=(ab[r.fraudType]||0)+Number(r.amount); });
+  const sa=Object.entries(ab).sort((a,b)=>b[1]-a[1]);
   destroyChart('amount');
   chartInstances['amount'] = new Chart(document.getElementById('chart-amount'), {
-    type: 'doughnut',
-    data: {
-      labels: sortedAmounts.map(a => a[0]),
-      datasets: [{
-        data: sortedAmounts.map(a => a[1]),
-        backgroundColor: CHART_COLORS.slice(0, sortedAmounts.length),
-        borderWidth: 2, borderColor: '#0f1420'
-      }]
-    },
-    options: {
-      ...CHART_DEFAULTS, cutout: '50%',
-      plugins: {
-        legend: { labels: { color: '#94a3b8', font: { family: 'DM Sans', size: 11 }, boxWidth: 10, padding: 10 } },
-        tooltip: { callbacks: { label: (ctx) => ` ₹${ctx.parsed.toLocaleString('en-IN')}` } }
-      }
-    }
+    type:'doughnut',
+    data:{ labels:sa.map(a=>a[0]), datasets:[{ data:sa.map(a=>a[1]), backgroundColor:CC.slice(0,sa.length), borderWidth:2, borderColor:'#0f1420' }] },
+    options:{...CD, cutout:'50%', plugins:{legend:{labels:{color:'#94a3b8',font:{family:'DM Sans',size:11},boxWidth:10,padding:10}}, tooltip:{callbacks:{label:(ctx)=>` ₹${ctx.parsed.toLocaleString('en-IN')}`}}}}
   });
 }
 
+// ── REPORTS TABLE ──
 function renderReports() {
   let reports = Reports.getAll();
-  const statusFilter = document.getElementById('filter-status').value;
-  const typeFilter = document.getElementById('filter-type').value;
-  const searchFilter = document.getElementById('filter-search').value.toLowerCase();
-
-  if (statusFilter) reports = reports.filter(r => r.status === statusFilter);
-  if (typeFilter) reports = reports.filter(r => r.fraudType === typeFilter);
-  if (searchFilter) reports = reports.filter(r =>
-    r.id.toLowerCase().includes(searchFilter) ||
-    r.userEmail.toLowerCase().includes(searchFilter) ||
-    r.fraudType.toLowerCase().includes(searchFilter) ||
-    r.description.toLowerCase().includes(searchFilter)
+  const sf = document.getElementById('filter-status').value;
+  const tf = document.getElementById('filter-type').value;
+  const qf = document.getElementById('filter-search').value.toLowerCase();
+  if (sf) reports = reports.filter(r => r.status === sf);
+  if (tf) reports = reports.filter(r => r.fraudType === tf);
+  if (qf) reports = reports.filter(r =>
+    r.id.toLowerCase().includes(qf) || r.userEmail.toLowerCase().includes(qf) ||
+    r.fraudType.toLowerCase().includes(qf) || r.description.toLowerCase().includes(qf)
   );
-
-  const tbody = document.getElementById('reports-table-body');
-  const noReports = document.getElementById('no-reports');
-
-  if (reports.length === 0) {
-    tbody.innerHTML = '';
-    noReports.style.display = 'block';
-    return;
-  }
-  noReports.style.display = 'none';
-
+  const tbody = document.getElementById('reports-tbody');
+  const noEl  = document.getElementById('no-reports');
+  if (!reports.length) { tbody.innerHTML=''; noEl.style.display='block'; return; }
+  noEl.style.display = 'none';
   tbody.innerHTML = reports.map(r => `
     <tr>
-      <td><span style="font-family:monospace;font-size:0.82rem;color:var(--text3);">${r.id}</span></td>
+      <td><span style="font-family:monospace;font-size:0.8rem;color:var(--text3);">${r.id}</span></td>
       <td>
-        <div style="font-size:0.88rem;">${r.userName || 'Unknown'}</div>
-        <div style="font-size:0.78rem;color:var(--text3);">${r.userEmail}</div>
+        <div style="font-size:0.88rem;font-weight:500;">${r.userName||'Unknown'}</div>
+        <div style="font-size:0.76rem;color:var(--text3);">${r.userEmail}</div>
       </td>
-      <td>${r.fraudType}</td>
-      <td style="color:var(--text2);">${r.location || '—'}</td>
-      <td style="color:var(--text2);">${formatAmount(r.amount)}</td>
+      <td style="font-size:0.88rem;">${r.fraudType}</td>
+      <td style="color:var(--text2);font-size:0.88rem;">${r.location||'—'}</td>
+      <td style="color:var(--text2);font-size:0.88rem;">${formatAmount(r.amount)}</td>
       <td style="color:var(--text2);font-size:0.85rem;">${formatDate(r.createdAt)}</td>
       <td>${statusBadge(r.status)}</td>
       <td>
-        <select class="status-select" onchange="updateStatus('${r.id}', this.value)">
-          <option value="pending" ${r.status==='pending'?'selected':''}>Pending</option>
-          <option value="in-review" ${r.status==='in-review'?'selected':''}>In Review</option>
-          <option value="verified" ${r.status==='verified'?'selected':''}>Verified</option>
-          <option value="rejected" ${r.status==='rejected'?'selected':''}>Rejected</option>
-        </select>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start;">
+          <button class="btn-review" onclick="openReview('${r.id}')">&#x1F4AC; Review & Reply</button>
+          ${r.adminReply ? `<span class="replied-tag">&#x2713; Replied</span>` : ''}
+        </div>
       </td>
     </tr>
   `).join('');
 }
 
-function updateStatus(id, status) {
-  Reports.updateStatus(id, status);
-  renderReports();
-  loadKPIs();
-  showToast(`Status updated to "${status}"`, 'success');
+// ── REVIEW MODAL ──
+let currentReportId = null;
+
+const TEMPLATES = [
+  { label: '✅ Verified Fraud', text: `Dear {name},\n\nThank you for submitting your fraud report (ID: {id}).\n\nAfter careful review, we have VERIFIED this as a confirmed fraud incident. Your report has been documented and flagged in our system.\n\nRecommended actions:\n1. File an official complaint at cybercrime.gov.in\n2. Contact your bank immediately to secure your account\n3. Change all related passwords\n4. File an FIR with your local police station\n\nWe appreciate your contribution to making the digital ecosystem safer. Stay vigilant and report any further suspicious activity.\n\nRegards,\nFraudShield Admin Team` },
+  { label: '🔎 Under Investigation', text: `Dear {name},\n\nThank you for your fraud report (ID: {id}).\n\nWe have reviewed your submission and are currently conducting a deeper investigation into this incident. Your case has been escalated to our review team.\n\nWe will update you as soon as our investigation is complete. In the meantime:\n- Do not make any further payments to the suspected fraudster\n- Preserve all evidence (screenshots, call logs, messages)\n- Do not delete any communications related to this incident\n\nWe will follow up with a decision shortly.\n\nRegards,\nFraudShield Admin Team` },
+  { label: '❌ Not Fraud / Rejected', text: `Dear {name},\n\nThank you for submitting your report (ID: {id}).\n\nAfter thorough review of the details provided, we were unable to classify this incident as fraud based on the information available. This report has been marked as rejected.\n\nIf you have additional evidence or believe this decision is incorrect, you are welcome to submit a new report with more details.\n\nFor general safety, we still recommend:\n- Being cautious with unsolicited communications\n- Never sharing OTPs or passwords with anyone\n- Verifying identities before making payments\n\nThank you for your vigilance.\n\nRegards,\nFraudShield Admin Team` },
+  { label: '⚠️ Need More Info', text: `Dear {name},\n\nThank you for your report (ID: {id}).\n\nWe have reviewed your submission and require additional information to proceed with the investigation. Please submit a new report or contact us with:\n\n- Exact date and time of the incident\n- Screenshot or evidence of the suspicious communication\n- Transaction reference number (if money was lost)\n- Contact details of the suspected fraudster\n\nYour report remains open and we look forward to your response.\n\nRegards,\nFraudShield Admin Team` },
+];
+
+function openReview(id) {
+  const reports = Reports.getAll();
+  const r = reports.find(x => x.id === id);
+  if (!r) return;
+  currentReportId = id;
+
+  document.getElementById('rm-id').textContent = r.id;
+  document.getElementById('rm-title').textContent = r.fraudType + ' — Review';
+
+  document.getElementById('rm-details').innerHTML = `
+    <div class="detail-item"><div class="d-lbl">Submitted By</div><div class="d-val">${r.userName||'Unknown'}</div></div>
+    <div class="detail-item"><div class="d-lbl">Email</div><div class="d-val">${r.userEmail}</div></div>
+    <div class="detail-item"><div class="d-lbl">Fraud Type</div><div class="d-val">${r.fraudType}</div></div>
+    <div class="detail-item"><div class="d-lbl">Current Status</div><div class="d-val">${statusBadge(r.status)}</div></div>
+    <div class="detail-item"><div class="d-lbl">Location</div><div class="d-val">${r.location||'—'}</div></div>
+    <div class="detail-item"><div class="d-lbl">Amount Lost</div><div class="d-val">${formatAmount(r.amount)}</div></div>
+    <div class="detail-item"><div class="d-lbl">Incident Date</div><div class="d-val">${r.incidentDate ? formatDate(r.incidentDate) : '—'}</div></div>
+    <div class="detail-item"><div class="d-lbl">Submitted On</div><div class="d-val">${formatDate(r.createdAt)}</div></div>
+    ${r.suspectContact ? `<div class="detail-item" style="grid-column:1/-1;"><div class="d-lbl">Suspect Contact</div><div class="d-val">${r.suspectContact}</div></div>` : ''}
+  `;
+
+  document.getElementById('rm-desc').textContent = r.description;
+
+  // Show previous reply if exists
+  const existingEl = document.getElementById('rm-existing-reply');
+  if (r.adminReply) {
+    existingEl.style.display = 'block';
+    document.getElementById('rm-reply-meta').innerHTML = `&#x2713; Admin replied on ${formatDate(r.adminRepliedAt)}`;
+    document.getElementById('rm-reply-text').textContent = r.adminReply;
+  } else {
+    existingEl.style.display = 'none';
+  }
+
+  // Populate template buttons
+  const tplBar = document.getElementById('tpl-bar');
+  tplBar.innerHTML = TEMPLATES.map((t, i) => `<button class="tpl-btn" onclick="applyTemplate(${i},'${r.id}')">${t.label}</button>`).join('');
+
+  // Pre-fill textarea with existing reply if any
+  document.getElementById('rm-reply-input').value = r.adminReply || '';
+
+  // Set status select
+  const sel = document.getElementById('rm-status-select');
+  sel.value = r.status;
+
+  document.getElementById('review-overlay').classList.add('open');
 }
 
+function applyTemplate(idx, reportId) {
+  const r = Reports.getAll().find(x => x.id === reportId);
+  if (!r) return;
+  let text = TEMPLATES[idx].text;
+  text = text.replace(/{name}/g, r.userName || 'User');
+  text = text.replace(/{id}/g, r.id);
+  document.getElementById('rm-reply-input').value = text;
+
+  // Auto-set status to match template
+  const statusMap = [
+    { status: 'verified' },
+    { status: 'in-review' },
+    { status: 'rejected' },
+    { status: 'in-review' },
+  ];
+  document.getElementById('rm-status-select').value = statusMap[idx].status;
+}
+
+function submitReply() {
+  const reply = document.getElementById('rm-reply-input').value.trim();
+  const status = document.getElementById('rm-status-select').value;
+  const btn = document.getElementById('reply-submit-btn');
+
+  if (!reply) { showToast('Please write a response before sending.', 'error'); return; }
+
+  btn.innerHTML = '<div class="spinner"></div>&nbsp;Sending...';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    Reports.saveReply(currentReportId, reply, status);
+    closeReview();
+    renderReports();
+    loadKPIs();
+    showToast('Response sent and status updated!', 'success');
+    btn.innerHTML = '&#x1F4E8; Send Response';
+    btn.disabled = false;
+  }, 600);
+}
+
+function closeReview() {
+  document.getElementById('review-overlay').classList.remove('open');
+  currentReportId = null;
+}
+
+// ── USER MANAGEMENT ──
+function renderUsers() {
+  const all = Auth.getAllUsersForAdmin();
+  const q   = (document.getElementById('user-search')?.value || '').toLowerCase();
+  const allReports = Reports.getAll();
+
+  let users = all;
+  if (q) users = users.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+
+  const tbody  = document.getElementById('users-tbody');
+  const noEl   = document.getElementById('no-users');
+  if (!users.length) { tbody.innerHTML=''; noEl.style.display='block'; return; }
+  noEl.style.display = 'none';
+
+  tbody.innerHTML = users.map(u => {
+    const reportCount = allReports.filter(r => r.userEmail === u.email).length;
+    const isActive = u.active !== false;
+    const isHardcoded = u.hardcoded;
+    const isCurrentAdmin = u.email === session.email;
+
+    return `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#fff;flex-shrink:0;">
+            ${u.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}
+          </div>
+          <span style="font-weight:500;">${u.name}${isCurrentAdmin ? ' <span style="font-size:0.72rem;color:var(--primary);">(You)</span>' : ''}</span>
+        </div>
+      </td>
+      <td style="font-size:0.85rem;color:var(--text2);">${u.email}</td>
+      <td>
+        ${u.role === 'admin'
+          ? '<span class="badge" style="background:rgba(59,130,246,0.15);color:var(--primary);border:1px solid rgba(59,130,246,0.2);">⚙ Admin</span>'
+          : '<span class="badge" style="background:rgba(148,163,184,0.1);color:var(--text2);border:1px solid var(--border);">👤 User</span>'}
+      </td>
+      <td style="text-align:center;font-weight:600;color:${reportCount>0?'var(--heading)':'var(--text3)'};">${reportCount}</td>
+      <td style="font-size:0.85rem;color:var(--text2);">${u.createdAt ? formatDate(u.createdAt) : '—'}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:${isActive?'var(--success)':'var(--danger)'};display:inline-block;"></span>
+          <span style="font-size:0.85rem;color:${isActive?'var(--success)':'var(--danger)'};">${isActive ? 'Active' : 'Deactivated'}</span>
+        </div>
+      </td>
+      <td>
+        ${isHardcoded || isCurrentAdmin
+          ? `<span style="font-size:0.8rem;color:var(--text3);">Protected</span>`
+          : `<div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="btn btn-sm ${isActive ? 'btn-ghost' : 'btn-success'}"
+                onclick="promptToggleUser('${u.email}','${u.name}',${isActive})">
+                ${isActive ? '🔒 Deactivate' : '🔓 Activate'}
+              </button>
+              <button class="btn btn-danger btn-sm" onclick="promptDeleteUser('${u.email}','${u.name}')">
+                🗑 Delete
+              </button>
+            </div>`}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── CONFIRM MODAL ──
+let pendingAction = null;
+
+function promptToggleUser(email, name, isCurrentlyActive) {
+  pendingAction = { type: 'toggle', email, active: !isCurrentlyActive };
+  document.getElementById('confirm-icon').textContent = isCurrentlyActive ? '🔒' : '🔓';
+  document.getElementById('confirm-title').textContent = isCurrentlyActive ? 'Deactivate Account?' : 'Activate Account?';
+  document.getElementById('confirm-msg').innerHTML = isCurrentlyActive
+    ? `This will <strong>block ${name}</strong> from logging in. Their reports will remain. You can reactivate anytime.`
+    : `This will <strong>restore access for ${name}</strong>. They will be able to log in again.`;
+  document.getElementById('confirm-ok-btn').className = isCurrentlyActive ? 'btn btn-danger' : 'btn btn-success';
+  document.getElementById('confirm-ok-btn').textContent = isCurrentlyActive ? 'Deactivate' : 'Activate';
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+function promptDeleteUser(email, name) {
+  pendingAction = { type: 'delete', email };
+  document.getElementById('confirm-icon').textContent = '🗑';
+  document.getElementById('confirm-title').textContent = 'Delete Account?';
+  document.getElementById('confirm-msg').innerHTML = `This will <strong>permanently delete ${name}'s account</strong> and all their submitted reports. <strong>This cannot be undone.</strong>`;
+  document.getElementById('confirm-ok-btn').className = 'btn btn-danger';
+  document.getElementById('confirm-ok-btn').textContent = 'Delete Permanently';
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+function confirmAction() {
+  if (!pendingAction) return;
+  if (pendingAction.type === 'toggle') {
+    Auth.setUserActive(pendingAction.email, pendingAction.active);
+    showToast(`Account ${pendingAction.active ? 'activated' : 'deactivated'} successfully.`, 'success');
+  } else if (pendingAction.type === 'delete') {
+    Auth.deleteUser(pendingAction.email);
+    showToast('Account and all associated reports have been deleted.', 'success');
+  }
+  closeConfirm();
+  renderUsers();
+  loadKPIs();
+  renderReports();
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('open');
+  pendingAction = null;
+}
+
+// ── TAB SWITCHER ──
+const TAB_TITLES = {
+  analytics: ['Analytics Dashboard', 'Platform overview and fraud statistics'],
+  reports:   ['Report Management', 'Review, respond to and manage submitted fraud reports'],
+  users:     ['User Account Management', 'Activate, deactivate, or remove user accounts'],
+};
 function switchTab(tab) {
-  ['analytics', 'reports'].forEach(t => {
-    document.getElementById('panel-' + t).classList.remove('active');
-    document.getElementById('tab-' + t).classList.remove('active');
+  ['analytics','reports','users'].forEach(t => {
+    document.getElementById('panel-'+t).classList.remove('active');
+    document.getElementById('tab-'+t).classList.remove('active');
+    document.getElementById('sb-'+t)?.classList.remove('active');
   });
-  document.getElementById('panel-' + tab).classList.add('active');
-  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('sb-'+tab)?.classList.add('active');
+  document.getElementById('page-title').textContent = TAB_TITLES[tab][0];
+  document.getElementById('page-sub').textContent   = TAB_TITLES[tab][1];
   if (tab === 'reports') renderReports();
+  if (tab === 'users')   renderUsers();
 }
 
 function refreshAll() {
-  loadKPIs();
-  loadCharts();
-  renderReports();
+  loadKPIs(); loadCharts(); renderReports(); renderUsers();
   showToast('Data refreshed', 'info');
 }
 
@@ -513,3 +767,4 @@ loadCharts();
 </script>
 </body>
 </html>
+
